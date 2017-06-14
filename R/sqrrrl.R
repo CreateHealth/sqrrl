@@ -78,8 +78,10 @@ in_    <- function(var, vals) paste(var, parens(vals), sep = ' IN ')
 like_  <- function(var, val) paste0(var, ' LIKE("', val, '")')
 
 #' @export
-`%LIKE%` <- function(var, val) like_(var, val)
+`%LIKE%` <- function(var, val) ifelse(length(val) > 1, like(var, val), like_(var, val))
 
 #' @export
 like   <- function(var, ...) parens(OR(sapply(c(...), like_, var = var)))
 
+#' @export
+`%+%` <- function(a, b) paste(a, b)
