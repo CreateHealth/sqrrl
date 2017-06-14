@@ -13,3 +13,5 @@ Suggests: testthat
 RoxygenNote: 6.0.1.9000
 Roxygen: list(markdown = TRUE)
 Imports: stringr
+URL: https://github.com/gadenbuie/sqrrrl
+BugReports: https://github.com/gadenbuie/sqrrrl/issues
