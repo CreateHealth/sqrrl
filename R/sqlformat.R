@@ -22,7 +22,7 @@ sqlformat <- function(
 
   out <- c()
   if (md) out <- paste0(out, "\n```sql\n")
-  if (!is.null(header)) out <- paste0(out, "/*", header, "*/\n")
+  if (!is.null(header)) out <- paste(out, "/*", header, "*/\n")
   if (sqlformat_installed) {
     sql <- system(paste0("echo '", sql, "' | sqlformat ", sqlformat_options, " -"), intern = TRUE)
   }
