@@ -69,7 +69,7 @@ geq    <- function(...) .delim(..., op = '>=')
 WHERE  <- function(..., cond=TRUE) ifelse(cond, paste('WHERE', AND(...)), '')
 
 #' @export
-in_    <- function(var, vals) paste(var, parens(vals), sep = ' IN ')
+in_    <- function(var, vals) paste(var, ifelse(length(vals) > 1, parens(quotes(vals)), parens(vals)), sep = ' IN ')
 
 #' @export
 `%IN%` <- function(var, vals) in_(var, vals)

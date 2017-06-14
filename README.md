@@ -57,13 +57,22 @@ Quick Overview
     [1] ""
 
     > # ---- IN ----
+    > 'id' %IN% 1:4
+
+    [1] "id IN (1, 2, 3, 4)"
+
+    > 'id' %IN% letters[1:3]
+
+    [1] "id IN (a, b, c)"
+
+    > # Note: if left-hand-side length == 1, then LHS is unquoted (for subqueries)
     > 'id' %IN% paste(SELECT('id'), FROM('other_table'))
 
     [1] "id IN (SELECT id FROM other_table )"
 
-    > 'id' %IN% 1:4
+    > 'in' %IN% quotes(letters[1])
 
-    [1] "id IN (1, 2, 3, 4)"
+    [1] "in IN (\"a\")"
 
     > # ---- LIKE ----
     > 'text_col' %LIKE% 'Prefix%'

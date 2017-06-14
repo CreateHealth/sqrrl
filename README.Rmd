@@ -38,8 +38,11 @@ WHERE(cond = TRUE, 'col1 = 2', 'col2 >= 10')
 WHERE(cond = FALSE, 'col1 = 2', 'col2 >= 10')
 
 # ---- IN ----
-'id' %IN% paste(SELECT('id'), FROM('other_table'))
 'id' %IN% 1:4
+'id' %IN% letters[1:3]
+# Note: if left-hand-side length == 1, then LHS is unquoted (for subqueries)
+'id' %IN% paste(SELECT('id'), FROM('other_table'))
+'in' %IN% quotes(letters[1])
 
 # ---- LIKE ----
 'text_col' %LIKE% 'Prefix%'
