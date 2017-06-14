@@ -12,6 +12,12 @@ code to produce the SQL statement reads much like the SQL statement
 iteself. On the other hand, `sqrrrl` doesn't know anything about your
 database and can't help you out with completions, etc.
 
+Installation
+------------
+
+    # install.packages('devtools')
+    devtools::install_github('gadenbuie/sqrrrl')
+
 Quick Overview
 --------------
 
@@ -63,7 +69,7 @@ Quick Overview
 
     > 'id' %IN% letters[1:3]
 
-    [1] "id IN (a, b, c)"
+    [1] "id IN (\"a\", \"b\", \"c\")"
 
     > # Note: if left-hand-side length == 1, then LHS is unquoted (for subqueries)
     > 'id' %IN% paste(SELECT('id'), FROM('other_table'))

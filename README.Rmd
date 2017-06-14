@@ -17,6 +17,13 @@ Unlike other packages that build SQL queries using an object-oriented style, `sq
 The result is that the code to produce the SQL statement reads much like the SQL statement iteself.
 On the other hand, `sqrrrl` doesn't know anything about your database and can't help you out with completions, etc.
 
+## Installation
+
+```r
+# install.packages('devtools')
+devtools::install_github('gadenbuie/sqrrrl')
+```
+
 ## Quick Overview
 
 ```{r quick overview}
