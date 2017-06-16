@@ -110,3 +110,50 @@ INNER_JOIN <- function(left_ref, right_tbls, on, cond = NULL, prefer_using = TRU
 OUTER_JOIN <- function(left_ref, right_tbls, on, cond = NULL, prefer_using = TRUE) {
   JOIN('outer', left_ref, right_tbls, on, cond, prefer_using)
 }
+
+
+#' INSERT INTO tbl VALUES
+#'
+#' Inserts into a table the values in a vector or data.frame. Subsets the values
+#' by column name.
+#'
+#' @examples
+#' INSERT_INTO_VALUES('table', 1:3)
+#' INSERT_INTO_VALUES('table', c('a' = 1, 'b' = 2, 'c' = 3))
+#' INSERT_INTO_VALUES('iris', iris[c(1, 51, 101), ], c("Sepal.Length", "Petal.Length", "Species"))
+#'
+#' @param tbl Table name to insert into
+#' @param vals Values for insertion, can be a vector or a data.frame
+#' @param cols Columns to include
+#' @export
+INSERT_INTO_VALUES <- function(tbl, vals, cols = NULL) {
+  if (is.null(vals) || !length(vals)) return(NULL)
+  val_col_mismatch <- FALSE
+  if (!is.null(cols)) {
+    if (is.data.frame(vals)) val_col_mismatch <- ncol(vals) < length(cols)
+    else val_col_mismatch <- length(vals) < length(cols)
+  }
+  if (val_col_mismatch) stop("Number of value columns/entries was less than the number of columns specified.")
+
+  if (is.null(cols)) {
+    if (is.data.frame(vals)) cols <- colnames(vals)
+    else if (!is.null(names(vals))) cols <- names(vals)
+  } else {
+    if (!is.null(names(vals)) && !is.data.frame(vals) && any(names(vals) == '')) names(vals) <- cols
+    if (is.data.frame(vals)) vals <- vals[, cols]
+    else if (!is.null(names(vals))) vals <- vals[cols]
+  }
+
+  if (!is.data.frame(vals)) vals <- matrix(vals, nrow = 1)
+  for (valcol in colnames(vals)) {
+    vals[, valcol] <- quotes(vals[, valcol])
+  }
+
+  paste(
+    "INSERT INTO",
+    tbl,
+    if(!is.null(cols)) parens(cols),
+    'VALUES',
+    commas(apply(vals, 1, function(x) parens(commas(x))))
+  )
+}
