@@ -55,6 +55,10 @@ test_that("JOIN", {
   expect_equal(
     JOIN('left', 'lt', c('rt1' = 'right_tbl1', 'rt2' = 'right_tbl2'), c('id1', 'id2')),
     "LEFT JOIN (right_tbl1 rt1, right_tbl2 rt2) USING (id1, id2)")
+
+  expect_equal(
+    JOIN('left', 'lt', c('rt1' = 'right_tbl1', 'rt2' = 'right_tbl2'), c('col.1', 'col.2')),
+    "LEFT JOIN (right_tbl1 rt1, right_tbl2 rt2) USING (`col.1`, `col.2`)")
 })
 
 test_that("INSERT_INTO_VALUES", {
@@ -88,5 +92,15 @@ test_that("INSERT_INTO_VALUES", {
   expect_equal(
     INSERT_INTO_VALUES('table', c('a' = 1, 2, 3), c('a', 'b', 'c')),
     "INSERT INTO table (a, b, c) VALUES (1, 2, 3)"
+  )
+
+  colnames(testdf)[1] <- 'an.int'
+  expect_equal(
+    INSERT_INTO_VALUES('table', testdf, c('an.int', 'str')),
+    "INSERT INTO table (`an.int`, str) VALUES (1, \"a\"), (2, \"b\"), (3, \"c\")"
+  )
+  expect_equal(
+    INSERT_INTO_VALUES('iris', c('Petal.Length' = 1.9, 'Petal.Width' = 0.2, 'Species' = 'setosa')),
+    "INSERT INTO iris (`Petal.Length`, `Petal.Width`, Species) VALUES (1.9, 0.2, \"setosa\")"
   )
 })

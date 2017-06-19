@@ -56,8 +56,8 @@ JOIN <- function(type = '', left_ref, right_tbls, on, cond = NULL, prefer_using 
   right_tbl_refs <- prefer_names(right_tbls)
 
   match_on_tbls <- function(left, right, on) {
-    left_ids <- prefer_names(on)
-    right_ids <- unname(on)
+    left_ids <- escape_col(prefer_names(on))
+    right_ids <- escape_col(unname(on))
     paste(paste(left, left_ids, sep = '.'), paste(right, right_ids, sep = '.'), sep = '=')
   }
 
@@ -72,7 +72,7 @@ JOIN <- function(type = '', left_ref, right_tbls, on, cond = NULL, prefer_using 
   } else {
     if (is.list(on)) on <- on[[1]]
     if (prefer_using && is.null(names(on))) {
-      join_conditions <- "USING" %+% parens(on)
+      join_conditions <- "USING" %+% parens(escape_col(on))
     } else {
       join_conditions <- sapply(right_tbl_refs, match_on_tbls, left = left_ref, on = on)
       if (length(join_conditions) > 1) join_conditions <- "ON" %+% parens(AND(join_conditions))
@@ -144,15 +144,18 @@ INSERT_INTO_VALUES <- function(tbl, vals, cols = NULL) {
     else if (!is.null(names(vals))) vals <- vals[cols]
   }
 
-  if (!is.data.frame(vals)) vals <- matrix(vals, nrow = 1)
-  for (valcol in colnames(vals)) {
-    vals[, valcol] <- quotes(vals[, valcol])
+  if (!is.data.frame(vals)) vals <- vec2df(vals)
+
+  if (is.data.frame(vals)) {
+    for (valcol in colnames(vals)) {
+      vals[, valcol] <- quotes(vals[, valcol])
+    }
   }
 
   paste(
     "INSERT INTO",
     tbl,
-    if(!is.null(cols)) parens(cols),
+    if(!is.null(cols)) parens(escape_col(cols)),
     'VALUES',
     commas(apply(vals, 1, function(x) parens(commas(x))))
   )

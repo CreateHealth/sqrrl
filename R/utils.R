@@ -5,3 +5,8 @@ prefer_names <- function(x) {
   }
   y
 }
+
+vec2df <- function(x) {
+  x <- as.character(x)
+  data.frame(lapply(x, type.convert, as.is = TRUE), stringsAsFactors = FALSE)
+}
