@@ -79,6 +79,17 @@ SELECT_ <- function(table_cols, .distinct = FALSE) {
 #' @export
 SELECT_DISTINCT <- function(...) SELECT(..., .distinct = TRUE)
 
+#' General SQL Snippet Functions
+#'
+#' Create SQL snippets to build SQL queries.
+#'
+#' @name general
+NULL
+
+#' @describeIn general Create FROM SQL snippet with optional table aliases
+#' @examples
+#' FROM('table1', 'table2')
+#' FROM(t1 = 'table1', t2 = 'table2')
 #' @export
 FROM <- function(...) {
   tables <- c(...)
@@ -86,21 +97,65 @@ FROM <- function(...) {
   paste("FROM", tables)
 }
 
+#' @describeIn general Generate WHERE SQL snippet if `cond` evaluates to TRUE, with
+#'   arguments to WHERE concatenated by [`AND`]
+#' @examples
+#' WHERE('col1 IS NOT NULL')
+#' WHERE(cond = TRUE, 'col1 = 2', 'col2 >= 10')
+#' WHERE(cond = FALSE, 'col1 = 2', 'col2 >= 10')
 #' @export
 WHERE  <- function(..., cond=TRUE) ifelse(cond, paste('WHERE', AND(...)), '')
 
+#' @describeIn general Concatenate arguments with `AND`
+#' @examples
+#' AND(eq(id = 3, class = 'text_value'), geq(date = '2017-06-14'))
 #' @export
 AND   <- function(...) paste(c(...), collapse = ' AND ')
 
+#' @describeIn general Concatenate arguments with `OR`
+#' @examples
+#' OR(eq(id = 9, id = 12), leq(id = 5))
 #' @export
 OR    <- function(...) paste(c(...), collapse = ' OR ')
 
+#' @describeIn general Create `GROUP BY` SQL snippet, arguments are column names
+#'   separated by commas
+#' @examples
+#' GROUP_BY('col1', 'col2', 'col3')
 #' @export
 GROUP_BY <- function(...) paste("GROUP BY", commas(...))
+
+#' @describeIn general Create `LIMIT` SQL snippet
+#' @examples
+#' LIMIT(10)
+#' @export
+LIMIT <- function(n) paste("LIMIT", n)
+
+#' @describeIn general Add `DESC` or `ASC` after column name
+#' @export
+DESC <- function(x) paste(x, 'DESC')
+ASC <- function(x) paste(x, 'ASC')
+
+#' @describeIn general Create `ORDER BY` SQL snippet, arguments are column names
+#'   separated by commas
+#' @examples
+#' ORDER_BY('col1', 'col2', 'col3')
+#' ORDER_BY(DESC('col1'), 'col2', ASC('col3'))
+#' @export
+ORDER_BY <- function(...) paste("ORDER BY", commas(...))
 
 #' Joins of all flavors
 #'
 #' Produces a JOIN snippet
+#'
+#' @examples
+#' JOIN(type = '', 'left_tbl', 'right_tbl', 'id')
+#' JOIN('left', 'l', c('r' = 'right_tbl'), 'id')
+#' JOIN('left', 'l', c('r' = 'right_tbl'), 'id', prefer_using = FALSE)
+#' JOIN('right', 'left_tbl', 'right_tbl', c('left.col1' = 'right.col1', 'id2'))
+#' JOIN('inner', 'left_tbl', c('right_1', 'right_2'), 'id_col')
+#' JOIN('outer', 'l', c(r1 = 'right_1', r2 = 'right_2'), list('col1', 'col2'))
+#' JOIN("natural right", 'l', c(r1 = 'right_1', r2 = 'right_2'), list(c(left.col1 = 'col1', c(left.col2 = 'col2'))))
 #'
 #' @param type Join type string (can be lowercase): LEFT, RIGHT, INNER, CROSS,
 #'   NATURAL {LEFT, RIGHT} [OUTER].
@@ -112,7 +167,7 @@ GROUP_BY <- function(...) paste("GROUP BY", commas(...))
 #'   RHS table names. Names of entries in any vectors are used as LHS column names.
 #' @param cond Optional additional conditions.
 #' @param prefer_using Should USING clause be used instead of ON where possible?
-#' @rdname join
+#' @name join
 #' @export
 JOIN <- function(type = '', left_ref, right_tbls, on, cond = NULL, prefer_using = TRUE) {
   # Clean up RHS table names and add aliases if named
@@ -158,21 +213,25 @@ JOIN <- function(type = '', left_ref, right_tbls, on, cond = NULL, prefer_using 
 }
 
 #' @rdname join
+#' @export
 LEFT_JOIN <- function(left_ref, right_tbls, on, cond = NULL, prefer_using = TRUE) {
   JOIN('left', left_ref, right_tbls, on, cond, prefer_using)
 }
 
 #' @rdname join
+#' @export
 RIGHT_JOIN <- function(left_ref, right_tbls, on, cond = NULL, prefer_using = TRUE) {
   JOIN('right', left_ref, right_tbls, on, cond, prefer_using)
 }
 
 #' @rdname join
+#' @export
 INNER_JOIN <- function(left_ref, right_tbls, on, cond = NULL, prefer_using = TRUE) {
   JOIN('inner', left_ref, right_tbls, on, cond, prefer_using)
 }
 
 #' @rdname join
+#' @export
 OUTER_JOIN <- function(left_ref, right_tbls, on, cond = NULL, prefer_using = TRUE) {
   JOIN('outer', left_ref, right_tbls, on, cond, prefer_using)
 }
