@@ -1,5 +1,47 @@
 context("General Operators")
 
+test_that("SELECT", {
+  expect_equal(
+    SELECT(letters[1:3]),
+    "SELECT a, b, c"
+  )
+
+  expect_equal(
+    SELECT('t1' = letters[1:3], 't2' = letters[4:6]),
+    "SELECT t1.a, t1.b, t1.c, t2.d, t2.e, t2.f"
+  )
+
+  expect_equal(
+    SELECT(letters[1:3], 't2' = letters[4:6]),
+    "SELECT a, b, c, t2.d, t2.e, t2.f"
+  )
+
+  expect_equal(
+    SELECT(a = 'apple', b = 'banana', c = 'cherry'),
+    "SELECT apple as a, banana as b, cherry as c"
+  )
+
+  expect_equal(
+    SELECT('t1' = c(a = 'apple', b = 'banana')),
+    'SELECT t1.apple as a, t1.banana as b'
+  )
+
+  expect_equal(
+    SELECT('t1' = c(a = 'apple', b = 'banana'), c = 'cherry'),
+    "SELECT t1.apple as a, t1.banana as b, cherry as c"
+  )
+
+  expect_equal(
+    SELECT('t1' = c(a = 'apple', b = 'banana'), c = 'cherry', 't2' = c(d = 'dragon_fruit')),
+    "SELECT t1.apple as a, t1.banana as b, cherry as c, t2.dragon_fruit as d"
+  )
+
+  expect_equal(
+    SELECT(z = c('a', f = 'b', 'c'), i = 'd', g = c(h = 'e'), 'j'),
+    "SELECT z.a, z.b as f, z.c, d as i, g.e as h, j"
+  )
+})
+
 test_that("GROUP BY", {
   expect_equal(GROUP_BY('col1'),
                "GROUP BY col1")

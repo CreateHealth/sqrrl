@@ -1,17 +1,83 @@
+#' Generate SELECT statement snippets
+#'
+#' Generate an SQL snippet for SELECT or SELECT DISTINCT
+#'
+#' @examples
+#' SELECT(letters[1:3])
+#' SELECT(letters[1:3], 't2' = letters[4:6])
+#' SELECT(a = 'apple', b = 'banana', c = 'cherry')
+#' SELECT('t1' = c(a = 'apple', b = 'banana'), c = 'cherry')
+#' SELECT('t1' = c(a = 'apple', b = 'banana'), c = 'cherry', 't2' = c(d = 'dragon_fruit'))
+#'
+#' @param .distinct If true, uses SELECT DISTINCT as keyword
+#' @param ... Columns to select. Single arguments are assumed to be column
+#'   names. Single named arguments are renamed columns. Named arguments with a
+#'   vector of length greater than 1 or a vector with named entries are assumed
+#'   to be table names; entry names are column aliases.
 #' @export
-SELECT <- function(...) {
-  cols <- c(...)
-  if (!length(cols)) return("SELECT *")
-  if (is.null(names(cols))) {
-    paste('SELECT', commas(cols))
+SELECT <- function(..., .distinct = FALSE) {
+  cols <- list(...)
+  has_names <- !is.null(names(cols))
+  if (!has_names) {
+    cols <- list(unlist(cols))
   } else {
-    cols <- sapply(seq_along(cols), function(x) {
-      if (names(cols)[x] == '') cols[x]
-      else paste(cols[x], 'as', names(cols)[x])
+    col_names <- names(cols)
+    # Names can be table name or variable name
+    # If named entry length > 1 or named entry has names, then table name
+    # Else variable alias
+    entry_length <- sapply(cols, length)
+    has_entry_names <- sapply(cols, function(x) !is.null(names(x)))
+    for (i in seq_along(cols)) {
+      if (entry_length[i] == 1 & !has_entry_names[i]) {
+        cols[[i]] <- setNames(cols[[i]], names(cols[i]))
+        attributes(cols)$names[i] <- ''
+      }
+    }
+  }
+  SELECT_(cols, .distinct)
+}
+
+parse_table_cols <- function(table) {
+  table$cols <- escape_col(table$cols)
+  if (!is.null(table$name) && table$name != '') {
+    if (!is.null(names(table$cols))) {
+      col_names <- names(table$cols)
+      table$cols <- setNames(paste(table$name, table$cols, sep = '.'), col_names)
+    } else {
+      table$cols <- paste(table$name, table$cols, sep = '.')
+    }
+  }
+  if (is.null(names(table$cols))) {
+    commas(table$cols)
+  } else {
+    sapply(seq_along(table$cols), function(x) {
+      if (names(table$cols)[x] == '') table$cols[x]
+      else paste(table$cols[x], 'as', names(table$cols)[x])
     })
-    paste("SELECT", commas(cols))
   }
 }
+
+#' @describeIn SELECT Standard eval version of SELECT
+#'
+#' @examples
+#' SELECT_(list('t1' = c('a', z = 'b'), 't2' = 'c'))
+#'
+#' @param table_cols Named list of tables and columns
+#' @export
+SELECT_ <- function(table_cols, .distinct = FALSE) {
+  select <- ifelse(.distinct, 'SELECT DISTINCT', 'SELECT')
+  if (!length(table_cols)) return(paste(select, "*"))
+  table_cols <- lapply(seq_along(table_cols), function(i) {
+    list('name' = names(table_cols[i]), cols = table_cols[[i]])
+  })
+  cols <- lapply(table_cols, parse_table_cols)
+  cols <- unlist(cols)
+  paste(select, commas(cols))
+}
+
+#' @describeIn SELECT Alias for `SELECT(..., .distinct = TRUE)`
+#' @export
+SELECT_DISTINCT <- function(...) SELECT(..., .distinct = TRUE)
 
 #' @export
 FROM <- function(...) {
