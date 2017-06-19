@@ -72,11 +72,11 @@ test_that("INSERT_INTO_VALUES", {
 
   expect_equal(
     INSERT_INTO_VALUES('table', testdf),
-    "INSERT INTO table (int, val, str, fct) VALUES (1, 1.371, \"a\", \"a\"), (2, -0.5647, \"b\", \"b\"), (3, 0.3631, \"c\", \"c\")")
+    "INSERT INTO table (`int`, val, str, fct) VALUES (1, 1.371, \"a\", \"a\"), (2, -0.5647, \"b\", \"b\"), (3, 0.3631, \"c\", \"c\")")
 
   expect_equal(
     INSERT_INTO_VALUES('table', testdf, c('int', 'str')),
-    "INSERT INTO table (int, str) VALUES (1, \"a\"), (2, \"b\"), (3, \"c\")"
+    "INSERT INTO table (`int`, str) VALUES (1, \"a\"), (2, \"b\"), (3, \"c\")"
   )
 
   expect_equal(
