@@ -26,7 +26,7 @@ Quick Overview
     # ---- SELECT ----
     SELECT()
 
-    ## [1] "SELECT *"
+    ## [1] "SELECT "
 
     SELECT('col1', 'col2', 'col3')
 
@@ -35,6 +35,22 @@ Quick Overview
     SELECT(newcol = 'col1', avg_col1 = 'mean(col1)')
 
     ## [1] "SELECT col1 as newcol, mean(col1) as avg_col1"
+
+    SELECT(letters[1:3], 't2' = letters[4:6])
+
+    ## [1] "SELECT a, b, c, t2.d, t2.e, t2.f"
+
+    SELECT(a = 'apple', b = 'banana', c = 'cherry')
+
+    ## [1] "SELECT apple as a, banana as b, cherry as c"
+
+    SELECT('t1' = c(a = 'apple', b = 'banana'), c = 'cherry')
+
+    ## [1] "SELECT t1.apple as a, t1.banana as b, cherry as c"
+
+    SELECT('t1' = c(a = 'apple', b = 'banana'), c = 'cherry', 't2' = c(d = 'dragon_fruit'))
+
+    ## [1] "SELECT t1.apple as a, t1.banana as b, cherry as c, t2.dragon_fruit as d"
 
     # ---- FROM ----
     FROM('table1')
@@ -126,7 +142,7 @@ Quick Overview
     # Concatenate snippets with the %+% infix operator
     SELECT() %+% FROM('table') %+% WHERE(eq(id = 10))
 
-    ## [1] "SELECT * FROM table  WHERE id=10"
+    ## [1] "SELECT  FROM table  WHERE id=10"
 
     # ---- Complete Example ----
     (example_query <- 
@@ -183,7 +199,7 @@ More Operators and Examples
     # Join on multiple columns, with different names on left and right
     JOIN('right', 'left_tbl', 'right_tbl', c('left.col1' = 'right.col1', 'id2'))
 
-    ## [1] "RIGHT JOIN right_tbl ON (left_tbl.left.col1=right_tbl.right.col1 AND left_tbl.id2=right_tbl.id2)"
+    ## [1] "RIGHT JOIN right_tbl ON (left_tbl.`left.col1`=right_tbl.`right.col1` AND left_tbl.id2=right_tbl.id2)"
 
     # Join multiple tables on same column
     JOIN('inner', 'left_tbl', c('right_1', 'right_2'), 'id_col')
@@ -198,32 +214,32 @@ More Operators and Examples
     # Join multiple tables on different coluns with different column names
     JOIN("natural right", 'l', c(r1 = 'right_1', r2 = 'right_2'), list(c(left.col1 = 'col1', c(left.col2 = 'col2'))))
 
-    ## [1] "NATURAL RIGHT JOIN (right_1 r1, right_2 r2) ON (l.left.col1=r1.col1 AND l.left.col2=r1.col2 AND l.left.col1=r2.col1 AND l.left.col2=r2.col2)"
+    ## [1] "NATURAL RIGHT JOIN (right_1 r1, right_2 r2) ON (l.`left.col1`=r1.col1 AND l.`left.col2`=r1.col2 AND l.`left.col1`=r2.col1 AND l.`left.col2`=r2.col2)"
 
     # ---- INSERT INTO ... VALUES ----
     iris_example <- iris[c(1, 51, 101), ]
     # Insert all rows & columns from a data.frame
     INSERT_INTO_VALUES('iris', iris_example)
 
-    ## [1] "INSERT INTO iris (Sepal.Length, Sepal.Width, Petal.Length, Petal.Width, Species) VALUES (5.1, 3.5, 1.4, 0.2, \"setosa\"), (7, 3.2, 4.7, 1.4, \"versicolor\"), (6.3, 3.3, 6, 2.5, \"virginica\")"
+    ## [1] "INSERT INTO iris (`Sepal.Length`, `Sepal.Width`, `Petal.Length`, `Petal.Width`, Species) VALUES (5.1, 3.5, 1.4, 0.2, \"setosa\"), (7, 3.2, 4.7, 1.4, \"versicolor\"), (6.3, 3.3, 6, 2.5, \"virginica\")"
 
     # Insert select columns from a data.frame
     INSERT_INTO_VALUES('iris', iris_example, c('Petal.Length', 'Petal.Width', 'Species'))
 
-    ## [1] "INSERT INTO iris (Petal.Length, Petal.Width, Species) VALUES (1.4, 0.2, \"setosa\"), (4.7, 1.4, \"versicolor\"), (6, 2.5, \"virginica\")"
+    ## [1] "INSERT INTO iris (`Petal.Length`, `Petal.Width`, Species) VALUES (1.4, 0.2, \"setosa\"), (4.7, 1.4, \"versicolor\"), (6, 2.5, \"virginica\")"
 
     # Insert named vector
     INSERT_INTO_VALUES('iris', c('Petal.Length' = 1.9, 'Petal.Width' = 0.2, 'Species' = 'setosa'))
 
-    ## [1] "INSERT INTO iris (Petal.Length, Petal.Width, Species) VALUES (1.9, 0.2, setosa)"
+    ## [1] "INSERT INTO iris (`Petal.Length`, `Petal.Width`, Species) VALUES (1.9, 0.2, \"setosa\")"
 
     # Insert subset of named vector
     INSERT_INTO_VALUES('iris', c('Petal.Length' = 1.9, 'Petal.Width' = 0.2, 'Species' = 'setosa'),
                        cols = c('Petal.Width', 'Species'))
 
-    ## [1] "INSERT INTO iris (Petal.Width, Species) VALUES (0.2, setosa)"
+    ## [1] "INSERT INTO iris (`Petal.Width`, Species) VALUES (0.2, \"setosa\")"
 
     # Insert just vector of mixed type without column names
     INSERT_INTO_VALUES('iris', c(6.5, 3.2, 5.1, 2, 'virginica'))
 
-    ## [1] "INSERT INTO iris  VALUES (6.5, 3.2, 5.1, 2, virginica)"
+    ## [1] "INSERT INTO iris  VALUES (6.5, 3.2, 5.1, 2, \"virginica\")"
