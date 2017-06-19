@@ -26,6 +26,7 @@ quotes <- function(...) {
 escape_col <- function(...) {
   sapply(c(...), function(x) {
     if (grepl('\\.', x)) backtick(x)
+    else if (toupper(x) %in% KEYWORDS) backtick(x)
     else x
   }, USE.NAMES = FALSE)
 }
