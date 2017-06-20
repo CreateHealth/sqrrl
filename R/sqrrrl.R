@@ -152,13 +152,13 @@ ORDER_BY <- function(...) paste("ORDER BY", commas(...))
 #' Produces a JOIN snippet
 #'
 #' @examples
-#' JOIN(type = '', 'left_tbl', 'right_tbl', 'id')
-#' JOIN('left', 'l', c('r' = 'right_tbl'), 'id')
-#' JOIN('left', 'l', c('r' = 'right_tbl'), 'id', prefer_using = FALSE)
-#' JOIN('right', 'left_tbl', 'right_tbl', c('left.col1' = 'right.col1', 'id2'))
-#' JOIN('inner', 'left_tbl', c('right_1', 'right_2'), 'id_col')
-#' JOIN('outer', 'l', c(r1 = 'right_1', r2 = 'right_2'), list('col1', 'col2'))
-#' JOIN("natural right", 'l', c(r1 = 'right_1', r2 = 'right_2'), list(c(left.col1 = 'col1', c(left.col2 = 'col2'))))
+#' JOIN('left_tbl', 'right_tbl', 'id')
+#' LEFT_JOIN('l', c('r' = 'right_tbl'), 'id')
+#' LEFT_JOIN('left', 'l', c('r' = 'right_tbl'), 'id', prefer_using = FALSE)
+#' RIGHT_JOIN('right', 'left_tbl', 'right_tbl', c('left.col1' = 'right.col1', 'id2'))
+#' INNER_JOIN('inner', 'left_tbl', c('right_1', 'right_2'), 'id_col')
+#' OUTER_JOIN('outer', 'l', c(r1 = 'right_1', r2 = 'right_2'), list('col1', 'col2'))
+#' JOIN(type = "natural right", 'l', c(r1 = 'right_1', r2 = 'right_2'), list(c(left.col1 = 'col1', c(left.col2 = 'col2'))))
 #'
 #' @param type Join type string (can be lowercase): LEFT, RIGHT, INNER, CROSS,
 #'   NATURAL {LEFT, RIGHT} [OUTER].
@@ -172,7 +172,7 @@ ORDER_BY <- function(...) paste("ORDER BY", commas(...))
 #' @param prefer_using Should USING clause be used instead of ON where possible?
 #' @name join
 #' @export
-JOIN <- function(type = '', left_ref, right_tbls, on, cond = NULL, prefer_using = TRUE) {
+JOIN <- function(left_ref, right_tbls, on, cond = NULL, prefer_using = TRUE, type = '') {
   # Clean up RHS table names and add aliases if named
   if (is.list(right_tbls)) right_tbls <- unlist(lapply(right_tbls, `[`, 1))
   right_tbl_names <- paste(right_tbls, names(right_tbls))
@@ -218,25 +218,25 @@ JOIN <- function(type = '', left_ref, right_tbls, on, cond = NULL, prefer_using 
 #' @rdname join
 #' @export
 LEFT_JOIN <- function(left_ref, right_tbls, on, cond = NULL, prefer_using = TRUE) {
-  JOIN('left', left_ref, right_tbls, on, cond, prefer_using)
+  JOIN(type = 'left', left_ref, right_tbls, on, cond, prefer_using)
 }
 
 #' @rdname join
 #' @export
 RIGHT_JOIN <- function(left_ref, right_tbls, on, cond = NULL, prefer_using = TRUE) {
-  JOIN('right', left_ref, right_tbls, on, cond, prefer_using)
+  JOIN(type = 'right', left_ref, right_tbls, on, cond, prefer_using)
 }
 
 #' @rdname join
 #' @export
 INNER_JOIN <- function(left_ref, right_tbls, on, cond = NULL, prefer_using = TRUE) {
-  JOIN('inner', left_ref, right_tbls, on, cond, prefer_using)
+  JOIN(type = 'inner', left_ref, right_tbls, on, cond, prefer_using)
 }
 
 #' @rdname join
 #' @export
 OUTER_JOIN <- function(left_ref, right_tbls, on, cond = NULL, prefer_using = TRUE) {
-  JOIN('outer', left_ref, right_tbls, on, cond, prefer_using)
+  JOIN(type = 'outer', left_ref, right_tbls, on, cond, prefer_using)
 }
 
 

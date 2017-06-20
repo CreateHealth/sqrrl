@@ -184,37 +184,37 @@ More Operators and Examples
 
     # ---- Joins ----
     # Using one ID
-    JOIN('left', 'left_tbl', 'right_tbl', 'id')
+    JOIN('left_tbl', 'right_tbl', 'id')
 
-    ## [1] "LEFT JOIN right_tbl USING (id)"
+    ## [1] " JOIN right_tbl USING (id)"
 
-    JOIN('left', 'l', c('r' = 'right_tbl'), 'id')
+    LEFT_JOIN('l', c('r' = 'right_tbl'), 'id')
 
     ## [1] "LEFT JOIN right_tbl r USING (id)"
 
-    JOIN('left', 'l', c('r' = 'right_tbl'), 'id', prefer_using = FALSE)
+    RIGHT_JOIN('l', c('r' = 'right_tbl'), 'id', prefer_using = FALSE)
 
-    ## [1] "LEFT JOIN right_tbl r ON l.id=r.id"
+    ## [1] "RIGHT JOIN right_tbl r ON l.id=r.id"
 
     # Join on multiple columns, with different names on left and right
-    JOIN('right', 'left_tbl', 'right_tbl', c('left.col1' = 'right.col1', 'id2'))
+    JOIN(type = 'natural right', 'left_tbl', 'right_tbl', c('left.col1' = 'right.col1', 'id2'))
 
-    ## [1] "RIGHT JOIN right_tbl ON (left_tbl.`left.col1`=right_tbl.`right.col1` AND left_tbl.id2=right_tbl.id2)"
+    ## [1] "NATURAL RIGHT JOIN right_tbl ON (left_tbl.`left.col1`=right_tbl.`right.col1` AND left_tbl.id2=right_tbl.id2)"
 
     # Join multiple tables on same column
-    JOIN('inner', 'left_tbl', c('right_1', 'right_2'), 'id_col')
+    INNER_JOIN('left_tbl', c('right_1', 'right_2'), 'id_col')
 
     ## [1] "INNER JOIN (right_1, right_2) USING (id_col)"
 
     # Join multiple tables on different columns
-    JOIN('outer', 'l', c(r1 = 'right_1', r2 = 'right_2'), list('col1', 'col2'))
+    OUTER_JOIN('l', c(r1 = 'right_1', r2 = 'right_2'), list('col1', 'col2'))
 
     ## [1] "OUTER JOIN (right_1 r1, right_2 r2) ON (l.col1=r1.col1 AND l.col2=r2.col2)"
 
     # Join multiple tables on different coluns with different column names
-    JOIN("natural right", 'l', c(r1 = 'right_1', r2 = 'right_2'), list(c(left.col1 = 'col1', c(left.col2 = 'col2'))))
+    JOIN('l', c(r1 = 'right_1', r2 = 'right_2'), list(c(right_1_id = 'id', c(right_2_id = 'id'))))
 
-    ## [1] "NATURAL RIGHT JOIN (right_1 r1, right_2 r2) ON (l.`left.col1`=r1.col1 AND l.`left.col2`=r1.col2 AND l.`left.col1`=r2.col1 AND l.`left.col2`=r2.col2)"
+    ## [1] " JOIN (right_1 r1, right_2 r2) ON (l.right_1_id=r1.id AND l.right_2_id=r1.id AND l.right_1_id=r2.id AND l.right_2_id=r2.id)"
 
     # ---- INSERT INTO ... VALUES ----
     iris_example <- iris[c(1, 51, 101), ]

@@ -9,8 +9,8 @@
 \alias{OUTER_JOIN}
 \title{Joins of all flavors}
 \usage{
-JOIN(type = "", left_ref, right_tbls, on, cond = NULL,
-  prefer_using = TRUE)
+JOIN(left_ref, right_tbls, on, cond = NULL, prefer_using = TRUE,
+  type = "")
 
 LEFT_JOIN(left_ref, right_tbls, on, cond = NULL, prefer_using = TRUE)
 
@@ -21,9 +21,6 @@ INNER_JOIN(left_ref, right_tbls, on, cond = NULL, prefer_using = TRUE)
 OUTER_JOIN(left_ref, right_tbls, on, cond = NULL, prefer_using = TRUE)
 }
 \arguments{
-\item{type}{Join type string (can be lowercase): LEFT, RIGHT, INNER, CROSS,
-NATURAL {LEFT, RIGHT} \link{OUTER}.}
-
 \item{left_ref}{Reference for left table (name or alias)}
 
 \item{right_tbls}{Character vector of right-hand side table names, names will
@@ -36,17 +33,20 @@ RHS table names. Names of entries in any vectors are used as LHS column names.}
 \item{cond}{Optional additional conditions.}
 
 \item{prefer_using}{Should USING clause be used instead of ON where possible?}
+
+\item{type}{Join type string (can be lowercase): LEFT, RIGHT, INNER, CROSS,
+NATURAL {LEFT, RIGHT} \link{OUTER}.}
 }
 \description{
 Produces a JOIN snippet
 }
 \examples{
-JOIN(type = '', 'left_tbl', 'right_tbl', 'id')
-JOIN('left', 'l', c('r' = 'right_tbl'), 'id')
-JOIN('left', 'l', c('r' = 'right_tbl'), 'id', prefer_using = FALSE)
-JOIN('right', 'left_tbl', 'right_tbl', c('left.col1' = 'right.col1', 'id2'))
-JOIN('inner', 'left_tbl', c('right_1', 'right_2'), 'id_col')
-JOIN('outer', 'l', c(r1 = 'right_1', r2 = 'right_2'), list('col1', 'col2'))
-JOIN("natural right", 'l', c(r1 = 'right_1', r2 = 'right_2'), list(c(left.col1 = 'col1', c(left.col2 = 'col2'))))
+JOIN('left_tbl', 'right_tbl', 'id')
+LEFT_JOIN('l', c('r' = 'right_tbl'), 'id')
+LEFT_JOIN('left', 'l', c('r' = 'right_tbl'), 'id', prefer_using = FALSE)
+RIGHT_JOIN('right', 'left_tbl', 'right_tbl', c('left.col1' = 'right.col1', 'id2'))
+INNER_JOIN('inner', 'left_tbl', c('right_1', 'right_2'), 'id_col')
+OUTER_JOIN('outer', 'l', c(r1 = 'right_1', r2 = 'right_2'), list('col1', 'col2'))
+JOIN(type = "natural right", 'l', c(r1 = 'right_1', r2 = 'right_2'), list(c(left.col1 = 'col1', c(left.col2 = 'col2'))))
 
 }
