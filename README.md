@@ -3,6 +3,22 @@ README
 Garrick Aden-Buie
 2017-06-20
 
+-   [🐿 sqrrrl](#sqrrrl)
+-   [Installation](#installation)
+-   [Quick Overview](#quick-overview)
+    -   [SELECT](#select)
+    -   [FROM](#from)
+    -   [WHERE](#where)
+    -   [IN](#in)
+    -   [LIKE](#like)
+    -   [Comparison Operators](#comparison-operators)
+    -   [Concatenation Operators](#concatenation-operators)
+    -   [Complete Example](#complete-example)
+-   [Formatting SQL Queries](#formatting-sql-queries)
+-   [More Operators and Examples](#more-operators-and-examples)
+    -   [Joins](#joins)
+    -   [INSERT INTO ... VALUES](#insert-into-...-values)
+
 🐿 sqrrrl
 --------
 
@@ -16,15 +32,15 @@ Installation
 ``` r
 # install.packages('devtools')
 devtools::install_github('gadenbuie/sqrrrl')
+library(sqrrrl)
 ```
 
 Quick Overview
 --------------
 
+### SELECT
+
 ``` r
-> library(sqrrrl)
-> 
-> # ---- SELECT ----
 > SELECT()
 ```
 
@@ -66,8 +82,9 @@ Quick Overview
 
     SELECT t1.apple AS a, t1.banana AS b, cherry AS c, t2.dragon_fruit AS d
 
+### FROM
+
 ``` r
-> # ---- FROM ----
 > FROM('table1')
 ```
 
@@ -85,8 +102,9 @@ Quick Overview
 
     FROM table1 t1, table2 t2, table3
 
+### WHERE
+
 ``` r
-> # ---- WHERE ----
 > WHERE('col1 IS NOT NULL')
 ```
 
@@ -104,8 +122,9 @@ Quick Overview
 
     ""
 
+### IN
+
 ``` r
-> # ---- IN ----
 > 'id' %IN% 1:4
 ```
 
@@ -130,8 +149,9 @@ Quick Overview
 
     IN IN ("a")
 
+### LIKE
+
 ``` r
-> # ---- LIKE ----
 > 'text_col' %LIKE% 'Prefix%'
 ```
 
@@ -143,8 +163,9 @@ Quick Overview
 
     (text_col LIKE("Prefix 1%") OR text_col LIKE("Prefix 2%"))
 
+### Comparison Operators
+
 ``` r
-> # ---- Comparison Operators ----
 > eq(id = 4)
 ```
 
@@ -180,8 +201,9 @@ Quick Overview
 
     id>=4
 
+### Concatenation Operators
+
 ``` r
-> # ---- Contatenation Operators ----
 > AND(eq(id = 3, class = 'text_value'), geq(date = '2017-06-14'))
 ```
 
@@ -200,8 +222,9 @@ Quick Overview
 
     SELECT * FROM TABLE  WHERE id=10
 
+### Complete Example
+
 ``` r
-> # ---- Complete Example ----
 > (example_query <- 
 +   SELECT('mpg', weight = 'wt', cylinders = 'cyl') %+%
 +   FROM('mtcars') %+%
@@ -240,8 +263,9 @@ SELECT mpg,
 More Operators and Examples
 ---------------------------
 
+### Joins
+
 ``` r
-> # ---- Joins ----
 > # Using one ID
 > JOIN('left_tbl', 'right_tbl', 'id')
 ```
@@ -288,8 +312,9 @@ More Operators and Examples
 
      JOIN (right_1 r1, right_2 r2) ON (l.right_1_id=r1.id AND l.right_2_id=r1.id AND l.right_1_id=r2.id AND l.right_2_id=r2.id)
 
+### INSERT INTO ... VALUES
+
 ``` r
-> # ---- INSERT INTO ... VALUES ----
 > iris_example <- iris[c(1, 51, 101), ]
 > # Insert all rows & columns from a data.frame
 > INSERT_INTO_VALUES('iris', iris_example)

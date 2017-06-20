@@ -2,11 +2,14 @@
 title: "README"
 author: "Garrick Aden-Buie"
 date: "`r strftime(Sys.time(), '%F')`"
-output: github_document
+output: 
+  github_document:
+    toc: true
 ---
 
 ```{r setup, include=FALSE}
 library(knitr)
+library(sqrrrl)
 opts_chunk$set(echo = TRUE, comment = '', prompt = TRUE)
 normal_output <- knit_hooks$get("output")
 knit_hooks$set(output = function(x, options) {
@@ -34,14 +37,14 @@ On the other hand, `sqrrrl` doesn't know anything about your database and can't 
 ```r
 # install.packages('devtools')
 devtools::install_github('gadenbuie/sqrrrl')
+library(sqrrrl)
 ```
 
 ## Quick Overview
 
-```{r quick overview, output.sql=TRUE}
-library(sqrrrl)
+### SELECT
 
-# ---- SELECT ----
+```{r select, output.sql=TRUE}
 SELECT()
 SELECT('col1', 'col2', 'col3')
 SELECT(newcol = 'col1', avg_col1 = 'mean(col1)')
@@ -49,43 +52,64 @@ SELECT(letters[1:3], 't2' = letters[4:6])
 SELECT(a = 'apple', b = 'banana', c = 'cherry')
 SELECT('t1' = c(a = 'apple', b = 'banana'), c = 'cherry')
 SELECT('t1' = c(a = 'apple', b = 'banana'), c = 'cherry', 't2' = c(d = 'dragon_fruit'))
+```
 
-# ---- FROM ----
+### FROM
+
+```{r from, output.sql=TRUE}
 FROM('table1')
 FROM('table1', 'table2')
 FROM(t1 = 'table1', t2 = 'table2', 'table3')
+```
 
-# ---- WHERE ----
+### WHERE
+
+```{r where, output.sql=TRUE}
 WHERE('col1 IS NOT NULL')
 WHERE(cond = TRUE, 'col1 = 2', 'col2 >= 10')
 WHERE(cond = FALSE, 'col1 = 2', 'col2 >= 10')
+```
 
-# ---- IN ----
+### IN
+
+```{r in, output.sql=TRUE}
 'id' %IN% 1:4
 'id' %IN% letters[1:3]
 # Note: if left-hand-side length == 1, then LHS is unquoted (for subqueries)
 'id' %IN% paste(SELECT('id'), FROM('other_table'))
 'in' %IN% quotes(letters[1])
+```
 
-# ---- LIKE ----
+### LIKE
+
+```{r like, output.sql=TRUE}
 'text_col' %LIKE% 'Prefix%'
 'text_col' %LIKE% c('Prefix 1%', 'Prefix 2%')
+```
 
-# ---- Comparison Operators ----
+### Comparison Operators
+
+```{r comparisons, output.sql=TRUE}
 eq(id = 4)
 neq(id = 4)
 lt(id = 4)
 leq(id = 4)
 gt(id = 4)
 geq(id = 4)
+```
 
-# ---- Contatenation Operators ----
+### Concatenation Operators 
+
+```{r concatenation, output.sql=TRUE}
 AND(eq(id = 3, class = 'text_value'), geq(date = '2017-06-14'))
 OR(eq(id = 9, id = 12), leq(id = 5))
 # Concatenate snippets with the %+% infix operator
 SELECT() %+% FROM('table') %+% WHERE(eq(id = 10))
+```
 
-# ---- Complete Example ----
+### Complete Example 
+
+```{r complete, output.sql=TRUE}
 (example_query <- 
   SELECT('mpg', weight = 'wt', cylinders = 'cyl') %+%
   FROM('mtcars') %+%
@@ -111,8 +135,9 @@ cat(example)
 
 ## More Operators and Examples
 
-```{r sql-more, output.sql=TRUE}
-# ---- Joins ----
+### Joins
+
+```{r joins, output.sql=TRUE}
 # Using one ID
 JOIN('left_tbl', 'right_tbl', 'id')
 LEFT_JOIN('l', c('r' = 'right_tbl'), 'id')
@@ -125,8 +150,11 @@ INNER_JOIN('left_tbl', c('right_1', 'right_2'), 'id_col')
 OUTER_JOIN('l', c(r1 = 'right_1', r2 = 'right_2'), list('col1', 'col2'))
 # Join multiple tables on different coluns with different column names
 JOIN('l', c(r1 = 'right_1', r2 = 'right_2'), list(c(right_1_id = 'id', c(right_2_id = 'id'))))
+```
 
-# ---- INSERT INTO ... VALUES ----
+### INSERT INTO ... VALUES 
+
+```{r insert, output.sql=TRUE}
 iris_example <- iris[c(1, 51, 101), ]
 # Insert all rows & columns from a data.frame
 INSERT_INTO_VALUES('iris', iris_example)
