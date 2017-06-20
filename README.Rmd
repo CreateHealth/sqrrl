@@ -139,7 +139,7 @@ cat(example)
 
 ```{r joins, output.sql=TRUE}
 # Using one ID
-JOIN('left_tbl', 'right_tbl', 'id')
+JOIN(left_ref = 'left_tbl', right_tbls = 'right_tbl', on = 'id')
 LEFT_JOIN('l', c('r' = 'right_tbl'), 'id')
 RIGHT_JOIN('l', c('r' = 'right_tbl'), 'id', prefer_using = FALSE)
 # Join on multiple columns, with different names on left and right

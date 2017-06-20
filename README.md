@@ -267,7 +267,7 @@ More Operators and Examples
 
 ``` r
 > # Using one ID
-> JOIN('left_tbl', 'right_tbl', 'id')
+> JOIN(left_ref = 'left_tbl', right_tbls = 'right_tbl', on = 'id')
 ```
 
      JOIN right_tbl USING (id)
