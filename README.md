@@ -26,7 +26,7 @@ Quick Overview
     # ---- SELECT ----
     SELECT()
 
-    ## [1] "SELECT "
+    ## [1] "SELECT *"
 
     SELECT('col1', 'col2', 'col3')
 
@@ -142,7 +142,7 @@ Quick Overview
     # Concatenate snippets with the %+% infix operator
     SELECT() %+% FROM('table') %+% WHERE(eq(id = 10))
 
-    ## [1] "SELECT  FROM table  WHERE id=10"
+    ## [1] "SELECT * FROM table  WHERE id=10"
 
     # ---- Complete Example ----
     (example_query <- 

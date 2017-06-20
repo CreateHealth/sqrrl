@@ -8,7 +8,7 @@
 \usage{
 SELECT(..., .distinct = FALSE)
 
-SELECT_(table_cols, .distinct = FALSE)
+SELECT_(table_cols = NULL, .distinct = FALSE)
 
 SELECT_DISTINCT(...)
 }

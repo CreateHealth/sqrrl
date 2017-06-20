@@ -17,8 +17,11 @@
 #' @export
 SELECT <- function(..., .distinct = FALSE) {
   cols <- list(...)
+  cols <- compact(cols)
   has_names <- !is.null(names(cols))
-  if (!has_names) {
+  if (!length(cols)) {
+    cols <- NULL
+  } else if (!has_names) {
     cols <- list(unlist(cols))
   } else {
     col_names <- names(cols)
@@ -64,9 +67,9 @@ parse_table_cols <- function(table) {
 #'
 #' @param table_cols Named list of tables and columns
 #' @export
-SELECT_ <- function(table_cols, .distinct = FALSE) {
+SELECT_ <- function(table_cols = NULL, .distinct = FALSE) {
   select <- ifelse(.distinct, 'SELECT DISTINCT', 'SELECT')
-  if (!length(table_cols)) return(paste(select, "*"))
+  if (is.null(table_cols) || !length(table_cols)) return(paste(select, "*"))
   table_cols <- lapply(seq_along(table_cols), function(i) {
     list('name' = names(table_cols[i]), cols = table_cols[[i]])
   })

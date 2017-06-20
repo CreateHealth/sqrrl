@@ -11,3 +11,8 @@ vec2df <- function(x) {
   x <- setNames(as.character(x), x.names)
   data.frame(lapply(x, type.convert, as.is = TRUE), stringsAsFactors = FALSE)
 }
+
+# From Hadley: http://r-pkgs.had.co.nz/namespace.html
+compact <- function(x) {
+  x[!vapply(x, is.null, logical(1))]
+}

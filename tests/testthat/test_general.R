@@ -2,6 +2,21 @@ context("General Operators")
 
 test_that("SELECT", {
   expect_equal(
+    c(SELECT(), SELECT(NULL), SELECT_(), SELECT_(NULL)),
+    rep("SELECT *", 4)
+  )
+
+  expect_equal(
+    SELECT(NULL, 'a'),
+    "SELECT a"
+  )
+
+  expect_equal(
+    SELECT(NULL, a = 'apple', NULL, 'b'),
+    "SELECT apple as a, b"
+  )
+
+  expect_equal(
     SELECT(letters[1:3]),
     "SELECT a, b, c"
   )
