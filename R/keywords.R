@@ -1,3 +1,4 @@
+# Scraped from: https://www.drupal.org/docs/develop/coding-standards/list-of-sql-reserved-words
 KEYWORDS <- c(
   "ABORT",
   "ABS",
