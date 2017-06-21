@@ -1,8 +1,11 @@
 Package: sqrrrl
 Type: Package
 Title: Utility Functions For Building SQL Queries
-Version: 0.0.0.9019
+Version: 0.0.0.9020
 Author: Garrick Aden-Buie
+Authors@R: c(
+    person("Garrick", "Aden-Buie",, "gadenbuie@mail.usf.edu", c("aut", "cre", "cph"))
+    )
 Maintainer: Garrick Aden-Buie <gadenbuie@mail.usf.edu>
 Description: A set of useful functions for building text-only SQL queries that
     gives query-building that functional feeling.

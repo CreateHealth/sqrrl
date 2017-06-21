@@ -10,6 +10,7 @@ test_that("SELECT", {
   expect_equal(SELECT_DISTINCT('a'), "SELECT DISTINCT a")
   expect_equal(SELECT(NULL, a = 'apple', NULL, 'b'), "SELECT apple as a, b")
   expect_equal(SELECT(letters[1:3]), "SELECT a, b, c")
+  expect_equal(SELECT('a.b'), "SELECT a.b")
 
   expect_equal(
     SELECT('t1' = letters[1:3], 't2' = letters[4:6]),

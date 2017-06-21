@@ -1,7 +1,7 @@
 README
 ================
 Garrick Aden-Buie
-2017-06-20
+2017-06-21
 
 -   [🐿 sqrrrl](#sqrrrl)
 -   [Installation](#installation)
@@ -147,7 +147,7 @@ Quick Overview
 > 'in' %IN% quotes(letters[1])
 ```
 
-    IN IN ("a")
+    `in` IN ("a")
 
 ### LIKE
 
@@ -207,7 +207,7 @@ Quick Overview
 > AND(eq(id = 3, class = 'text_value'), geq(date = '2017-06-14'))
 ```
 
-    id="3" AND CLASS="text_value" AND date>="2017-06-14"
+    id=3 AND `class`="text_value" AND `date`>="2017-06-14"
 
 ``` r
 > OR(eq(id = 9, id = 12), leq(id = 5))

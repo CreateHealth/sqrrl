@@ -41,7 +41,7 @@ SELECT <- function(..., .distinct = FALSE) {
 }
 
 parse_table_cols <- function(table) {
-  table$cols <- escape_col(table$cols)
+  table$cols <- escape_col(table$cols, .ignore_dot = TRUE)
   if (!is.null(table$name) && table$name != '') {
     if (!is.null(names(table$cols))) {
       col_names <- names(table$cols)
