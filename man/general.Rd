@@ -22,7 +22,7 @@ OR(...)
 
 GROUP_BY(...)
 
-LIMIT(n)
+LIMIT(n = 1)
 
 DESC(x)
 

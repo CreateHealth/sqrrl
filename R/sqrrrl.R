@@ -132,7 +132,7 @@ GROUP_BY <- function(...) paste("GROUP BY", commas(...))
 #' @examples
 #' LIMIT(10)
 #' @export
-LIMIT <- function(n) paste("LIMIT", n)
+LIMIT <- function(n = 1) if (is.numeric(n) && n > 0) paste("LIMIT", as.integer(n))
 
 #' @describeIn general Add `DESC` or `ASC` after column name
 #' @export

@@ -6,20 +6,10 @@ test_that("SELECT", {
     rep("SELECT *", 4)
   )
 
-  expect_equal(
-    SELECT(NULL, 'a'),
-    "SELECT a"
-  )
-
-  expect_equal(
-    SELECT(NULL, a = 'apple', NULL, 'b'),
-    "SELECT apple as a, b"
-  )
-
-  expect_equal(
-    SELECT(letters[1:3]),
-    "SELECT a, b, c"
-  )
+  expect_equal(SELECT(NULL, 'a'), "SELECT a")
+  expect_equal(SELECT_DISTINCT('a'), "SELECT DISTINCT a")
+  expect_equal(SELECT(NULL, a = 'apple', NULL, 'b'), "SELECT apple as a, b")
+  expect_equal(SELECT(letters[1:3]), "SELECT a, b, c")
 
   expect_equal(
     SELECT('t1' = letters[1:3], 't2' = letters[4:6]),
@@ -57,11 +47,35 @@ test_that("SELECT", {
   )
 })
 
+test_that("FROM", {
+  expect_equal(FROM('table'), "FROM table ")
+  expect_equal(FROM(t = 'table'), "FROM table t")
+  expect_equal(FROM(t1 = 'table', t2 = 'table2'), "FROM table t1, table2 t2")
+  expect_equal(FROM('table', t2 = 'table2'), "FROM table , table2 t2")
+})
+
+test_that("AND, OR, LIMIT", {
+  expect_equal(AND('cond1'), 'cond1')
+  expect_equal(AND('cond1', 'cond2'), 'cond1 AND cond2')
+  expect_equal(AND(c('cond1', 'cond2')), 'cond1 AND cond2')
+
+  expect_equal(OR('cond1'), 'cond1')
+  expect_equal(OR('cond1', 'cond2'), 'cond1 OR cond2')
+  expect_equal(OR(c('cond1', 'cond2')), 'cond1 OR cond2')
+
+  expect_equal(LIMIT(10), "LIMIT 10")
+  expect_equal(LIMIT(0), NULL)
+  expect_equal(LIMIT(), "LIMIT 1")
+  expect_equal(LIMIT(10.5), "LIMIT 10")
+})
+
 test_that("GROUP BY", {
   expect_equal(GROUP_BY('col1'),
                "GROUP BY col1")
   expect_equal(GROUP_BY('col1', 'col2', 'col3'),
                "GROUP BY col1, col2, col3")
+  expect_equal(GROUP_BY('col1', ASC('col2'), DESC('col3')),
+               "GROUP BY col1, col2 ASC, col3 DESC")
 })
 
 test_that("JOIN", {
@@ -69,17 +83,21 @@ test_that("JOIN", {
     LEFT_JOIN('left_tbl', 'right_tbl', 'id'),
     "LEFT JOIN right_tbl USING (id)")
 
-  expect_equal(
-    LEFT_JOIN('left_tbl', 'right_tbl', 'id', prefer_using = FALSE),
-    "LEFT JOIN right_tbl ON left_tbl.id=right_tbl.id")
+  expect_error(
+    JOIN('left', right_tbls = c('r1', 'r2'), on = list('a', 'b', 'c'))
+  )
 
   expect_equal(
-    LEFT_JOIN('left_tbl', 'right_tbl', c('leftID' = 'rightID')),
-    "LEFT JOIN right_tbl ON left_tbl.leftID=right_tbl.rightID")
+    RIGHT_JOIN('left_tbl', 'right_tbl', 'id', prefer_using = FALSE),
+    "RIGHT JOIN right_tbl ON left_tbl.id=right_tbl.id")
 
   expect_equal(
-    LEFT_JOIN('left_tbl', 'right_tbl', c('lid1' = 'rid1', 'id2')),
-    "LEFT JOIN right_tbl ON (left_tbl.lid1=right_tbl.rid1 AND left_tbl.id2=right_tbl.id2)")
+    INNER_JOIN('left_tbl', 'right_tbl', c('leftID' = 'rightID')),
+    "INNER JOIN right_tbl ON left_tbl.leftID=right_tbl.rightID")
+
+  expect_equal(
+    OUTER_JOIN('left_tbl', 'right_tbl', c('lid1' = 'rid1', 'id2')),
+    "OUTER JOIN right_tbl ON (left_tbl.lid1=right_tbl.rid1 AND left_tbl.id2=right_tbl.id2)")
 
   expect_equal(
     LEFT_JOIN('lt', c('rt' = 'right_tbl'), 'id'),
@@ -160,4 +178,23 @@ test_that("INSERT_INTO_VALUES", {
     INSERT_INTO_VALUES('iris', c('Petal.Length' = 1.9, 'Petal.Width' = 0.2, 'Species' = 'setosa')),
     "INSERT INTO iris (`Petal.Length`, `Petal.Width`, Species) VALUES (1.9, 0.2, \"setosa\")"
   )
+})
+
+test_that("UPDATE", {
+  expect_equal(
+    UPDATE('iris', c(some_column = 1, some_other_col = "high"), eq(another_col = 2), geq(a_third_col = 10)),
+    "UPDATE iris  SET some_column=1, some_other_col=\"high\" WHERE another_col=2 AND a_third_col>=10")
+  expect_equal(
+    UPDATE('t1', c(col1 = 'col1 + 1')),
+    "UPDATE t1  SET col1=\"col1 + 1\"")
+  expect_equal(
+    UPDATE('t1', c(col1 = 'col1 + 1', col2 = 'col1')),
+    "UPDATE t1  SET col1=\"col1 + 1\", col2=\"col1\"")
+  expect_equal(
+    UPDATE('t', c(id = 'id + 1'), .order = DESC('id')),
+    "UPDATE t  SET id=\"id + 1\"  ORDER BY id DESC")
+  # expect_equal(
+  #   UPDATE(c('items', 'month'), c('items.price' = 'month.price'), eq(items.id='month.id')),
+  #   "UPDATE items , month  SET items.price=month.price WHERE items.id=month.id"
+  # )
 })
