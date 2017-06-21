@@ -43,10 +43,10 @@ Produces a JOIN snippet
 \examples{
 JOIN('left_tbl', 'right_tbl', 'id')
 LEFT_JOIN('l', c('r' = 'right_tbl'), 'id')
-LEFT_JOIN('left', 'l', c('r' = 'right_tbl'), 'id', prefer_using = FALSE)
-RIGHT_JOIN('right', 'left_tbl', 'right_tbl', c('left.col1' = 'right.col1', 'id2'))
-INNER_JOIN('inner', 'left_tbl', c('right_1', 'right_2'), 'id_col')
-OUTER_JOIN('outer', 'l', c(r1 = 'right_1', r2 = 'right_2'), list('col1', 'col2'))
+LEFT_JOIN('l', c('r' = 'right_tbl'), 'id', prefer_using = FALSE)
+RIGHT_JOIN('left_tbl', 'right_tbl', c('left.col1' = 'right.col1', 'id2'))
+INNER_JOIN('left_tbl', c('right_1', 'right_2'), 'id_col')
+OUTER_JOIN('l', c(r1 = 'right_1', r2 = 'right_2'), list('col1', 'col2'))
 JOIN(type = "natural right", 'l', c(r1 = 'right_1', r2 = 'right_2'), list(c(left.col1 = 'col1', c(left.col2 = 'col2'))))
 
 }

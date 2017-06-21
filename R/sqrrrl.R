@@ -154,10 +154,10 @@ ORDER_BY <- function(...) paste("ORDER BY", commas(...))
 #' @examples
 #' JOIN('left_tbl', 'right_tbl', 'id')
 #' LEFT_JOIN('l', c('r' = 'right_tbl'), 'id')
-#' LEFT_JOIN('left', 'l', c('r' = 'right_tbl'), 'id', prefer_using = FALSE)
-#' RIGHT_JOIN('right', 'left_tbl', 'right_tbl', c('left.col1' = 'right.col1', 'id2'))
-#' INNER_JOIN('inner', 'left_tbl', c('right_1', 'right_2'), 'id_col')
-#' OUTER_JOIN('outer', 'l', c(r1 = 'right_1', r2 = 'right_2'), list('col1', 'col2'))
+#' LEFT_JOIN('l', c('r' = 'right_tbl'), 'id', prefer_using = FALSE)
+#' RIGHT_JOIN('left_tbl', 'right_tbl', c('left.col1' = 'right.col1', 'id2'))
+#' INNER_JOIN('left_tbl', c('right_1', 'right_2'), 'id_col')
+#' OUTER_JOIN('l', c(r1 = 'right_1', r2 = 'right_2'), list('col1', 'col2'))
 #' JOIN(type = "natural right", 'l', c(r1 = 'right_1', r2 = 'right_2'), list(c(left.col1 = 'col1', c(left.col2 = 'col2'))))
 #'
 #' @param type Join type string (can be lowercase): LEFT, RIGHT, INNER, CROSS,
@@ -287,4 +287,50 @@ INSERT_INTO_VALUES <- function(tbl, vals, cols = NULL) {
     'VALUES',
     commas(apply(vals, 1, function(x) parens(commas(x))))
   )
+}
+
+
+SET <- function(...) paste("SET", commas(eq(...)))
+SET_ <- function(set) {
+  if (is.null(names(set))) {
+    stop("set must be a named vector of column-value pairs.")
+  }
+  set <- vec2df(set)
+  set <- sapply(names(set), function(x) eq_(x, set[[x]]), USE.NAMES = FALSE)
+  paste(
+    "SET", commas(set)
+  )
+}
+
+#' UPDATE
+#'
+#' Create `UPDATE` SQL statement
+#'
+#' @examples
+#' UPDATE('iris', c(some_column = 1, some_other_col = "high"), eq(another_col = 2), geq(a_third_col = 10))
+#' UPDATE('t1', c(col1 = 'col1 + 1'))
+#' UPDATE('t1', c(col1 = 'col1 + 1', col2 = 'col1'))
+#' UPDATE('t', c(id = 'id + 1'), .order = DESC('id'))
+#'
+#' @param tables Table name(s) for update (can be named)
+#' @param set Named vector of column-value pairs, where the vector name is the
+#'   column name.
+#' @param ... Conditions passed on to `WHERE` clause (optional)
+#' @param .ignore Add `IGNORE` keyword to `UPDATE` clause
+#' @param .order Optional vector of columns passed to [`ORDER_BY`]
+#' @param .limit Optional number of rows for `LIMIT` condition
+UPDATE <- function(tables, col_vals, ..., .ignore = FALSE, .order = NULL, .limit = NULL) {
+  if (is.null(names(col_vals))) {
+    stop("col_vals must be a named vector of column-value pairs.")
+  }
+  where <- c(...)
+  update <- paste(
+    ifelse(!.ignore, "UPDATE", "UPDATE IGNORE"),
+    paste(tables, names(tables), sep = ' ', collapse = ', '),
+    SET_(col_vals),
+    WHERE(cond = length(where), where),
+    if (!is.null(.order)) ORDER_BY(.order),
+    if (!is.null(.limit)) LIMIT(.limit)
+  )
+  gsub(" +$", "", update)
 }
