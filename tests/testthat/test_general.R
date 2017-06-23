@@ -143,7 +143,8 @@ test_that("INSERT_INTO_VALUES", {
     int = 1:3,
     val = round(rnorm(3), 4),
     str = letters[1:3],
-    fct = factor(letters[1:3], levels = letters)
+    fct = factor(letters[1:3], levels = letters),
+    stringsAsFactors = FALSE
   )
 
   expect_equal(
@@ -178,6 +179,14 @@ test_that("INSERT_INTO_VALUES", {
   expect_equal(
     INSERT_INTO_VALUES('iris', c('Petal.Length' = 1.9, 'Petal.Width' = 0.2, 'Species' = 'setosa')),
     "INSERT INTO iris (`Petal.Length`, `Petal.Width`, Species) VALUES (1.9, 0.2, \"setosa\")"
+  )
+
+  test_with_missing <- testdf
+  test_with_missing[1, 'val'] <- NA
+  test_with_missing[2, 'str'] <- ''
+  expect_equal(
+    INSERT_INTO_VALUES('missing', test_with_missing, c('val', 'str')),
+    "INSERT INTO missing (val, str) VALUES (NULL, \"a\"), (-0.5647, \"\"), (0.3631, \"c\")"
   )
 })
 

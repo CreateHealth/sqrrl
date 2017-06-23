@@ -19,8 +19,15 @@ quotes <- function(...) {
 .quotes <- function(x, force = FALSE) {
   if (force)
     return(quotes_(x))
-  is_number <- !any(is.na(suppressWarnings(as.numeric(x))))
-  if (is.factor(x))
+  if (inherits(x, 'character')) y <- type.convert(x, as.is = TRUE)
+  else y <- x
+  is_number <- class(y) == "integer" | class(y) == "numeric"
+  if (is.null(x))
+    "NULL"
+  else if (any(is.na(x))) {
+    if (is_number) ifelse(is.na(x), 'NULL', paste(y))
+    else ifelse(is.na(x), '""', quotes_(x))
+  } else if (is.factor(x))
     quotes_(paste(x))
   else if (inherits(x, 'Date'))
     quotes_(strftime(x, '%F'))
