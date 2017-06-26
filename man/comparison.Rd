@@ -59,7 +59,7 @@ like(var, ...)
 BETWEEN(var, val1, val2)
 }
 \description{
-Generate SQL snippets comparing variables and values. \code{sqrrrl} provides two
+Generate SQL snippets comparing variables and values. \code{sqrrl} provides two
 types of each function. Functions without an underscore, like \code{eq}, take an
 unlimited number of arguments and value pairs, where each argument is assumed
 to be single valued and the argument name is used as the column name.

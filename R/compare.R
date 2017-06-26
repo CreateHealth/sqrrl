@@ -1,6 +1,6 @@
 #' Comparison Operators
 #'
-#' Generate SQL snippets comparing variables and values. `sqrrrl` provides two
+#' Generate SQL snippets comparing variables and values. `sqrrl` provides two
 #' types of each function. Functions without an underscore, like `eq`, take an
 #' unlimited number of arguments and value pairs, where each argument is assumed
 #' to be single valued and the argument name is used as the column name.

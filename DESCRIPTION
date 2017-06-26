@@ -1,7 +1,7 @@
-Package: sqrrrl
+Package: sqrrl
 Type: Package
 Title: Utility Functions For Building SQL Queries
-Version: 0.0.0.9021
+Version: 0.0.0.9022
 Author: Garrick Aden-Buie
 Authors@R: c(
     person("Garrick", "Aden-Buie",, "gadenbuie@mail.usf.edu", c("aut", "cre", "cph"))
@@ -16,5 +16,5 @@ Suggests: testthat
 RoxygenNote: 6.0.1.9000
 Roxygen: list(markdown = TRUE)
 Imports: stringr
-URL: https://github.com/gadenbuie/sqrrrl
-BugReports: https://github.com/gadenbuie/sqrrrl/issues
+URL: https://github.com/gadenbuie/sqrrl
+BugReports: https://github.com/gadenbuie/sqrrl/issues

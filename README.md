@@ -1,9 +1,9 @@
 README
 ================
 Garrick Aden-Buie
-2017-06-23
+2017-06-26
 
--   [🐿 sqrrrl](#sqrrrl)
+-   [🐿 sqrrl](#sqrrl)
 -   [Installation](#installation)
 -   [Quick Overview](#quick-overview)
     -   [SELECT](#select)
@@ -19,20 +19,20 @@ Garrick Aden-Buie
     -   [Joins](#joins)
     -   [INSERT INTO ... VALUES](#insert-into-...-values)
 
-🐿 sqrrrl
---------
+🐿 sqrrl
+-------
 
-`sqrrrl` is a small collection of utility functions that help build text-based SQL queries in an R-style native-feeling and functional manner.
+`sqrrl` is a small collection of utility functions that help build text-based SQL queries in an R-style native-feeling and functional manner.
 
-Unlike other packages that build SQL queries using an object-oriented style, `sqrrrl` provides small functions that produce SQL snippets and can be linked together to compose SQL queries. The result is that the code to produce the SQL statement reads much like the SQL statement iteself. On the other hand, `sqrrrl` doesn't know anything about your database and can't help you out with completions, etc.
+Unlike other packages that build SQL queries using an object-oriented style, `sqrrl` provides small functions that produce SQL snippets and can be linked together to compose SQL queries. The result is that the code to produce the SQL statement reads much like the SQL statement iteself. On the other hand, `sqrrl` doesn't know anything about your database and can't help you out with completions, etc.
 
 Installation
 ------------
 
 ``` r
 # install.packages('devtools')
-devtools::install_github('gadenbuie/sqrrrl')
-library(sqrrrl)
+devtools::install_github('gadenbuie/sqrrl')
+library(sqrrl)
 ```
 
 Quick Overview
@@ -240,9 +240,9 @@ Quick Overview
 Formatting SQL Queries
 ----------------------
 
-`sqrrrl` also provides a simple wrapper for <https://github.com/andialbrecht/sqlparse>, a Python package for formatting SQL queries. `sqlparse` can be installed via `pip install --upgrade sqlparse`, thereafter making available the system command `sqlformat`.
+`sqrrl` also provides a simple wrapper for <https://github.com/andialbrecht/sqlparse>, a Python package for formatting SQL queries. `sqlparse` can be installed via `pip install --upgrade sqlparse`, thereafter making available the system command `sqlformat`.
 
-`sqrrrl::sqlformat()` pretty-prints SQL queries, such as the one above.
+`sqrrl::sqlformat()` pretty-prints SQL queries, such as the one above.
 
 ``` r
 > example <- sqlformat(example_query, header = 'A Beautifully Formatted Example Query')

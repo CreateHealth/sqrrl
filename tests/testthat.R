@@ -1,4 +1,4 @@
 library(testthat)
-library(sqrrrl)
+library(sqrrl)
 
-test_check("sqrrrl")
+test_check("sqrrl")
