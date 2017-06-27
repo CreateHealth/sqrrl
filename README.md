@@ -1,7 +1,7 @@
 README
 ================
 Garrick Aden-Buie
-2017-06-26
+2017-06-27
 
 -   [🐿 sqrrl](#sqrrl)
 -   [Installation](#installation)
