@@ -274,7 +274,7 @@ INSERT_INTO_VALUES <- function(tbl, vals, cols = NULL) {
 
   if (is.data.frame(vals)) {
     for (valcol in colnames(vals)) {
-      vals[, valcol] <- quotes(vals[, valcol])
+      vals[[valcol]] <- quotes(vals[[valcol]])
     }
   }
 
