@@ -1,7 +1,7 @@
 Package: sqrrl
 Type: Package
 Title: Utility Functions For Building SQL Queries
-Version: 0.0.0.9024
+Version: 0.0.0.9025
 Author: Garrick Aden-Buie
 Authors@R: c(
     person("Garrick", "Aden-Buie",, "gadenbuie@mail.usf.edu", c("aut", "cre", "cph"))
@@ -12,9 +12,12 @@ Description: A set of useful functions for building text-only SQL queries that
 License: MIT + file LICENSE
 Encoding: UTF-8
 LazyData: true
-Suggests: testthat
+Suggests: testthat,
+    knitr,
+    rmarkdown
 RoxygenNote: 6.0.1.9000
 Roxygen: list(markdown = TRUE)
 Imports: stringr
 URL: https://github.com/gadenbuie/sqrrl
 BugReports: https://github.com/gadenbuie/sqrrl/issues
+VignetteBuilder: knitr

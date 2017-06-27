@@ -1,10 +1,12 @@
 ---
-title: "README"
+title: "Quick Overview"
 author: "Garrick Aden-Buie"
-date: "`r strftime(Sys.time(), '%F')`"
-output: 
-  github_document:
-    toc: true
+date: "`r Sys.Date()`"
+output: rmarkdown::html_vignette
+vignette: >
+  %\VignetteIndexEntry{Quick Overview}
+  %\VignetteEngine{knitr::rmarkdown}
+  %\VignetteEncoding{UTF-8}
 ---
 
 ```{r setup, include=FALSE}
@@ -31,14 +33,6 @@ knit_hooks$set(output = function(x, options) {
 Unlike other packages that build SQL queries using an object-oriented style, `sqrrl` provides small functions that produce SQL snippets and can be linked together to compose SQL queries.
 The result is that the code to produce the SQL statement reads much like the SQL statement iteself.
 On the other hand, `sqrrl` doesn't know anything about your database and can't help you out with completions, etc.
-
-## Installation
-
-```r
-# install.packages('devtools')
-devtools::install_github('gadenbuie/sqrrl')
-library(sqrrl)
-```
 
 ## Quick Overview
 

@@ -1,0 +1,6 @@
+authors:
+  Garrick Aden-Buie:
+    href: https://garrickadenbuie.com
+template:
+  params:
+    bootswatch: yeti
