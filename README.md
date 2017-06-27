@@ -15,4 +15,4 @@ devtools::install_github('gadenbuie/sqrrl')
 library(sqrrl)
 ```
 
-Package documentation and overview can be found at <http://gadenbuie.github.io/sqrrl>.
+Package documentation and overview can be found at <http://gadenbuie.github.io/sqrrl/>.
