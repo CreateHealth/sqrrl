@@ -180,8 +180,8 @@ JOIN <- function(left_ref, right_tbls, on, cond = NULL, prefer_using = TRUE, typ
   right_tbl_refs <- prefer_names(right_tbls)
 
   match_on_tbls <- function(left, right, on) {
-    left_ids <- escape_col(prefer_names(on))
-    right_ids <- escape_col(unname(on))
+    left_ids <- escape_col(prefer_names(on), .ignore_dot = FALSE)
+    right_ids <- escape_col(unname(on), .ignore_dot = FALSE)
     paste(paste(left, left_ids, sep = '.'), paste(right, right_ids, sep = '.'), sep = '=')
   }
 
@@ -196,7 +196,7 @@ JOIN <- function(left_ref, right_tbls, on, cond = NULL, prefer_using = TRUE, typ
   } else {
     if (is.list(on)) on <- on[[1]]
     if (prefer_using && is.null(names(on))) {
-      join_conditions <- "USING" %+% parens(escape_col(on))
+      join_conditions <- "USING" %+% parens(escape_col(on, .ignore_dot = FALSE))
     } else {
       join_conditions <- sapply(right_tbl_refs, match_on_tbls, left = left_ref, on = on)
       if (length(join_conditions) > 1) join_conditions <- "ON" %+% parens(AND(join_conditions))
@@ -205,12 +205,10 @@ JOIN <- function(left_ref, right_tbls, on, cond = NULL, prefer_using = TRUE, typ
   }
 
   AND(
-    paste(
-      toupper(type),
-      'JOIN',
-      ifelse(length(right_tbl_names) > 1, parens(commas(right_tbl_names)), right_tbl_names),
-      join_conditions
-    ),
+    toupper(type) %+%
+      'JOIN' %+%
+      ifelse(length(right_tbl_names) > 1, parens(commas(right_tbl_names)), right_tbl_names) %+%
+      join_conditions,
     cond
   )
 }

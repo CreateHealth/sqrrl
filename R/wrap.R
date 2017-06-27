@@ -43,7 +43,7 @@ quotes <- function(...) {
 }
 
 
-escape_col <- function(..., .ignore_dot = FALSE) {
+escape_col <- function(..., .ignore_dot = TRUE) {
   sapply(c(...), function(x) {
     if (!.ignore_dot && grepl('\\.', x)) backtick(x)
     else if (toupper(x) %in% KEYWORDS) backtick(x)
