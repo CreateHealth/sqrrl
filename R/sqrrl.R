@@ -75,7 +75,7 @@ SELECT_ <- function(table_cols = NULL, .distinct = FALSE) {
   })
   cols <- lapply(table_cols, parse_table_cols)
   cols <- unlist(cols)
-  paste(select, commas(cols))
+  select %+% commas(cols)
 }
 
 #' @describeIn SELECT Alias for `SELECT(..., .distinct = TRUE)`
@@ -97,7 +97,7 @@ NULL
 FROM <- function(...) {
   tables <- c(...)
   tables <- paste(tables, names(tables), sep = ' ', collapse = ', ')
-  paste("FROM", tables)
+  "FROM" %+% tables
 }
 
 #' @describeIn general Generate WHERE SQL snippet if `cond` evaluates to TRUE, with
@@ -107,7 +107,7 @@ FROM <- function(...) {
 #' WHERE(cond = TRUE, 'col1 = 2', 'col2 >= 10')
 #' WHERE(cond = FALSE, 'col1 = 2', 'col2 >= 10')
 #' @export
-WHERE  <- function(..., cond=TRUE) ifelse(cond, paste('WHERE', AND(...)), '')
+WHERE  <- function(..., cond=TRUE) ifelse(cond, 'WHERE' %+% AND(...), '')
 
 #' @describeIn general Concatenate arguments with `AND`
 #' @examples
@@ -126,18 +126,18 @@ OR    <- function(...) paste(c(...), collapse = ' OR ')
 #' @examples
 #' GROUP_BY('col1', 'col2', 'col3')
 #' @export
-GROUP_BY <- function(...) paste("GROUP BY", commas(...))
+GROUP_BY <- function(...) "GROUP BY" %+% commas(...)
 
 #' @describeIn general Create `LIMIT` SQL snippet
 #' @examples
 #' LIMIT(10)
 #' @export
-LIMIT <- function(n = 1) if (is.numeric(n) && n > 0) paste("LIMIT", as.integer(n))
+LIMIT <- function(n = 1) if (is.numeric(n) && n > 0) "LIMIT" %+% as.integer(n)
 
 #' @describeIn general Add `DESC` or `ASC` after column name
 #' @export
-DESC <- function(x) paste(x, 'DESC')
-ASC <- function(x) paste(x, 'ASC')
+DESC <- function(x) x %+% 'DESC'
+ASC <- function(x) x %+% 'ASC'
 
 #' @describeIn general Create `ORDER BY` SQL snippet, arguments are column names
 #'   separated by commas
@@ -145,7 +145,7 @@ ASC <- function(x) paste(x, 'ASC')
 #' ORDER_BY('col1', 'col2', 'col3')
 #' ORDER_BY(DESC('col1'), 'col2', ASC('col3'))
 #' @export
-ORDER_BY <- function(...) paste("ORDER BY", commas(...))
+ORDER_BY <- function(...) "ORDER BY" %+% commas(...)
 
 #' Joins of all flavors
 #'
@@ -280,13 +280,11 @@ INSERT_INTO_VALUES <- function(tbl, vals, cols = NULL) {
     }
   }
 
-  paste(
-    "INSERT INTO",
-    tbl,
-    if(!is.null(cols)) parens(escape_col(cols)),
-    'VALUES',
+  "INSERT INTO" %+%
+    (tbl %+%
+       if(!is.null(cols)) parens(escape_col(cols, .ignore_dot = FALSE))) %+%
+    'VALUES' %+%
     commas(apply(vals, 1, function(x) parens(commas(x))))
-  )
 }
 
 
@@ -297,9 +295,7 @@ SET_ <- function(set) {
   }
   set <- vec2df(set)
   set <- sapply(names(set), function(x) eq_(x, set[[x]]), USE.NAMES = FALSE)
-  paste(
-    "SET", commas(set)
-  )
+  "SET" %+% commas(set)
 }
 
 #' UPDATE
@@ -319,18 +315,18 @@ SET_ <- function(set) {
 #' @param .ignore Add `IGNORE` keyword to `UPDATE` clause
 #' @param .order Optional vector of columns passed to [`ORDER_BY`]
 #' @param .limit Optional number of rows for `LIMIT` condition
-UPDATE <- function(tables, col_vals, ..., .ignore = FALSE, .order = NULL, .limit = NULL) {
-  if (is.null(names(col_vals))) {
-    stop("col_vals must be a named vector of column-value pairs.")
+UPDATE <- function(tables, set, ..., .ignore = FALSE, .order = NULL, .limit = NULL) {
+  if (is.null(names(set))) {
+    stop("`set` must be a named vector of column-value pairs.")
   }
   where <- c(...)
-  update <- paste(
-    ifelse(!.ignore, "UPDATE", "UPDATE IGNORE"),
-    paste(tables, names(tables), sep = ' ', collapse = ', '),
-    SET_(col_vals),
-    WHERE(cond = length(where), where),
-    if (!is.null(.order)) ORDER_BY(.order),
+  update <- ifelse(!.ignore, "UPDATE", "UPDATE IGNORE") %+%
+    paste(tables, names(tables), sep = ' ', collapse = ', ') %+%
+    SET_(set) %+%
+    WHERE(cond = length(where), where) %+%
+    (
+    if (!is.null(.order)) ORDER_BY(.order) %+%
     if (!is.null(.limit)) LIMIT(.limit)
-  )
+    )
   gsub(" +$", "", update)
 }

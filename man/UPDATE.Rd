@@ -4,11 +4,13 @@
 \alias{UPDATE}
 \title{UPDATE}
 \usage{
-UPDATE(tables, col_vals, ..., .ignore = FALSE, .order = NULL,
-  .limit = NULL)
+UPDATE(tables, set, ..., .ignore = FALSE, .order = NULL, .limit = NULL)
 }
 \arguments{
 \item{tables}{Table name(s) for update (can be named)}
+
+\item{set}{Named vector of column-value pairs, where the vector name is the
+column name.}
 
 \item{...}{Conditions passed on to \code{WHERE} clause (optional)}
 
@@ -17,9 +19,6 @@ UPDATE(tables, col_vals, ..., .ignore = FALSE, .order = NULL,
 \item{.order}{Optional vector of columns passed to \code{\link{ORDER_BY}}}
 
 \item{.limit}{Optional number of rows for \code{LIMIT} condition}
-
-\item{set}{Named vector of column-value pairs, where the vector name is the
-column name.}
 }
 \description{
 Create \code{UPDATE} SQL statement
