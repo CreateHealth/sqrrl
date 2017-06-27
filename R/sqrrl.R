@@ -296,30 +296,38 @@ SET_ <- function(set) {
   "SET" %+% commas(set)
 }
 
-#' UPDATE
-#'
 #' Create `UPDATE` SQL statement
+#'
+#' Creates an UPDATE SQL statement for a single table. Currently, this function
+#' cannot handle using expressions in the `set` parameter. `UPDATE` is only
+#' useful at this time for single table updates when `set` contains actual
+#' values.
+#'
+#' Improvements are planned for this function to handle multiple table updates
+#' and the use of SQL expressions in the `SET` statement.
 #'
 #' @examples
 #' UPDATE('iris', c(some_column = 1, some_other_col = "high"), eq(another_col = 2), geq(a_third_col = 10))
-#' UPDATE('t1', c(col1 = 'col1 + 1'))
-#' UPDATE('t1', c(col1 = 'col1 + 1', col2 = 'col1'))
+#' UPDATE('t1', c(col1 = 'a'))
+#' UPDATE('t1', c(col1 = 'a', col2 = 42), 'id' %IN% 1:5)
 #' UPDATE('t', c(id = 'id + 1'), .order = DESC('id'))
 #'
-#' @param tables Table name(s) for update (can be named)
+#' @param table Table name for update (can be named)
 #' @param set Named vector of column-value pairs, where the vector name is the
 #'   column name.
 #' @param ... Conditions passed on to `WHERE` clause (optional)
 #' @param .ignore Add `IGNORE` keyword to `UPDATE` clause
 #' @param .order Optional vector of columns passed to [`ORDER_BY`]
 #' @param .limit Optional number of rows for `LIMIT` condition
-UPDATE <- function(tables, set, ..., .ignore = FALSE, .order = NULL, .limit = NULL) {
+#' @export
+UPDATE <- function(table, set, ..., .ignore = FALSE, .order = NULL, .limit = NULL) {
+  if (length(table) > 1) stop("UPDATE is for single-table updates. Please use UPDATE_MULT instead.")
   if (is.null(names(set))) {
     stop("`set` must be a named vector of column-value pairs.")
   }
   where <- c(...)
   update <- ifelse(!.ignore, "UPDATE", "UPDATE IGNORE") %+%
-    paste(tables, names(tables), sep = ' ', collapse = ', ') %+%
+    table %+% names(table) %+%
     SET_(set) %+%
     WHERE(cond = length(where), where) %+%
     (

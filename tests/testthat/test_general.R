@@ -195,14 +195,14 @@ test_that("UPDATE", {
     UPDATE('iris', c(some_column = 1, some_other_col = "high"), eq(another_col = 2), geq(a_third_col = 10)),
     "UPDATE iris  SET some_column=1, some_other_col=\"high\" WHERE another_col=2 AND a_third_col>=10")
   expect_equal(
-    UPDATE('t1', c(col1 = 'col1 + 1')),
-    "UPDATE t1  SET col1=\"col1 + 1\"")
+    UPDATE('t1', c(col1 = 'a')),
+    "UPDATE t1  SET col1=\"a\"")
   expect_equal(
-    UPDATE('t1', c(col1 = 'col1 + 1', col2 = 'col1')),
-    "UPDATE t1  SET col1=\"col1 + 1\", col2=\"col1\"")
-  expect_equal(
-    UPDATE('t', c(id = 'id + 1'), .order = DESC('id')),
-    "UPDATE t  SET id=\"id + 1\"  ORDER BY id DESC")
+    UPDATE('t1', c(col1 = 'a', col2 = 42), 'id' %IN% 1:5),
+    "UPDATE t1  SET col1=\"a\", col2=42 WHERE id IN (1, 2, 3, 4, 5)")
+  # expect_equal(
+  #   UPDATE('t', c(id = 'id + 1'), .order = DESC('id')),
+  #   "UPDATE t  SET id=id + 1 ORDER BY id DESC")
   # expect_equal(
   #   UPDATE(c('items', 'month'), c('items.price' = 'month.price'), eq(items.id='month.id')),
   #   "UPDATE items , month  SET items.price=month.price WHERE items.id=month.id"

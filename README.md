@@ -17,7 +17,8 @@ Garrick Aden-Buie
 -   [Formatting SQL Queries](#formatting-sql-queries)
 -   [More Operators and Examples](#more-operators-and-examples)
     -   [Joins](#joins)
-    -   [INSERT INTO ... VALUES](#insert-into-...-values)
+    -   [INSERT INTO VALUES](#insert-into-values)
+    -   [UPDATE](#update)
 
 🐿 sqrrl
 -------
@@ -312,7 +313,7 @@ More Operators and Examples
 
      JOIN (right_1 r1, right_2 r2) ON (l.right_1_id=r1.id AND l.right_2_id=r1.id AND l.right_1_id=r2.id AND l.right_2_id=r2.id)
 
-### INSERT INTO ... VALUES
+### INSERT INTO VALUES
 
 ``` r
 > iris_example <- iris[c(1, 51, 101), ]
@@ -350,3 +351,31 @@ More Operators and Examples
 ```
 
     INSERT INTO iris  VALUES (6.5, 3.2, 5.1, 2, "virginica")
+
+### UPDATE
+
+``` r
+> UPDATE('iris', c(some_column = 1, some_other_col = "high"), eq(another_col = 2), geq(a_third_col = 10))
+```
+
+    UPDATE iris  SET some_column=1, some_other_col="high" WHERE another_col=2 AND a_third_col>=10
+
+``` r
+> UPDATE('t1', c(col1 = 'a'))
+```
+
+    UPDATE t1  SET col1="a"
+
+``` r
+> UPDATE('t1', c(col1 = 'a', col2 = 42), 'id' %IN% 1:5)
+```
+
+    UPDATE t1  SET col1="a", col2=42 WHERE id IN (1, 2, 3, 4, 5)
+
+``` r
+> # The following statement doesn't work as expected (yet).
+> # This would set id equal to the string "id + 1", not id+1.
+> UPDATE('t', c(id = 'id + 1'), .order = DESC('id'))
+```
+
+    UPDATE t  SET id="id + 1"  ORDER BY id DESC

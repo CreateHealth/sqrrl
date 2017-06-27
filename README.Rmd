@@ -152,7 +152,7 @@ OUTER_JOIN('l', c(r1 = 'right_1', r2 = 'right_2'), list('col1', 'col2'))
 JOIN('l', c(r1 = 'right_1', r2 = 'right_2'), list(c(right_1_id = 'id', c(right_2_id = 'id'))))
 ```
 
-### INSERT INTO ... VALUES 
+### INSERT INTO VALUES 
 
 ```{r insert, output.sql=TRUE}
 iris_example <- iris[c(1, 51, 101), ]
@@ -167,4 +167,16 @@ INSERT_INTO_VALUES('iris', c('Petal.Length' = 1.9, 'Petal.Width' = 0.2, 'Species
                    cols = c('Petal.Width', 'Species'))
 # Insert just vector of mixed type without column names
 INSERT_INTO_VALUES('iris', c(6.5, 3.2, 5.1, 2, 'virginica'))
+```
+
+
+### UPDATE
+
+```{r update, output.sql=TRUE}
+UPDATE('iris', c(some_column = 1, some_other_col = "high"), eq(another_col = 2), geq(a_third_col = 10))
+UPDATE('t1', c(col1 = 'a'))
+UPDATE('t1', c(col1 = 'a', col2 = 42), 'id' %IN% 1:5)
+# The following statement doesn't work as expected (yet).
+# This would set id equal to the string "id + 1", not id+1.
+UPDATE('t', c(id = 'id + 1'), .order = DESC('id'))
 ```

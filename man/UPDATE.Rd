@@ -2,12 +2,12 @@
 % Please edit documentation in R/sqrrl.R
 \name{UPDATE}
 \alias{UPDATE}
-\title{UPDATE}
+\title{Create \code{UPDATE} SQL statement}
 \usage{
-UPDATE(tables, set, ..., .ignore = FALSE, .order = NULL, .limit = NULL)
+UPDATE(table, set, ..., .ignore = FALSE, .order = NULL, .limit = NULL)
 }
 \arguments{
-\item{tables}{Table name(s) for update (can be named)}
+\item{table}{Table name for update (can be named)}
 
 \item{set}{Named vector of column-value pairs, where the vector name is the
 column name.}
@@ -21,12 +21,19 @@ column name.}
 \item{.limit}{Optional number of rows for \code{LIMIT} condition}
 }
 \description{
-Create \code{UPDATE} SQL statement
+Creates an UPDATE SQL statement for a single table. Currently, this function
+cannot handle using expressions in the \code{set} parameter. \code{UPDATE} is only
+useful at this time for single table updates when \code{set} contains actual
+values.
+}
+\details{
+Improvements are planned for this function to handle multiple table updates
+and the use of SQL expressions in the \code{SET} statement.
 }
 \examples{
 UPDATE('iris', c(some_column = 1, some_other_col = "high"), eq(another_col = 2), geq(a_third_col = 10))
-UPDATE('t1', c(col1 = 'col1 + 1'))
-UPDATE('t1', c(col1 = 'col1 + 1', col2 = 'col1'))
+UPDATE('t1', c(col1 = 'a'))
+UPDATE('t1', c(col1 = 'a', col2 = 42), 'id' \%IN\% 1:5)
 UPDATE('t', c(id = 'id + 1'), .order = DESC('id'))
 
 }
