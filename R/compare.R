@@ -11,8 +11,10 @@
 #' @name comparison
 NULL
 
-
-.delim  <- function(..., op) .delim_(names(c(...)), c(...), op)
+.delim <- function(..., op) {
+  args <- list(...)
+  mapply(.delim_, var = names(args), val = args, op = op, USE.NAMES = FALSE)
+}
 .delim_ <- function(var, val, op) paste(escape_col(var), quotes(val), sep = op)
 
 #' @rdname comparison

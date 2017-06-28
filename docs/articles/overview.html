@@ -24,12 +24,12 @@
         <span class="icon-bar"></span>
         <span class="icon-bar"></span>
       </button>
-      <a class="navbar-brand" href="../index.html">sqrrl</a>
+      <a class="navbar-brand" href="../index.html">🐿 sqrrl</a>
     </div>
     <div id="navbar" class="navbar-collapse collapse">
       <ul class="nav navbar-nav">
 <li>
-  <a href="..//index.html">
+  <a href="../index.html">
     <span class="fa fa-home fa-lg"></span>
      
   </a>
@@ -72,7 +72,7 @@
       <h1>Quick Overview</h1>
                         <h4 class="author">Garrick Aden-Buie</h4>
             
-            <h4 class="date">2017-06-27</h4>
+            <h4 class="date">2017-06-28</h4>
           </div>
 
     
@@ -253,16 +253,24 @@
 <div id="update" class="section level3">
 <h3 class="hasAnchor">
 <a href="#update" class="anchor"></a>UPDATE</h3>
-<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="op">&gt;</span><span class="st"> </span><span class="kw"><a href="../reference/UPDATE.html">UPDATE</a></span>(<span class="st">'iris'</span>, <span class="kw">c</span>(<span class="dt">some_column =</span> <span class="dv">1</span>, <span class="dt">some_other_col =</span> <span class="st">"high"</span>), <span class="kw"><a href="../reference/comparison.html">eq</a></span>(<span class="dt">another_col =</span> <span class="dv">2</span>), <span class="kw"><a href="../reference/comparison.html">geq</a></span>(<span class="dt">a_third_col =</span> <span class="dv">10</span>))</code></pre></div>
-<pre><code>UPDATE iris  SET some_column=1, some_other_col="high" WHERE another_col=2 AND a_third_col&gt;=10</code></pre>
-<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="op">&gt;</span><span class="st"> </span><span class="kw"><a href="../reference/UPDATE.html">UPDATE</a></span>(<span class="st">'t1'</span>, <span class="kw">c</span>(<span class="dt">col1 =</span> <span class="st">'a'</span>))</code></pre></div>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="op">&gt;</span><span class="st"> </span><span class="kw"><a href="../reference/UPDATE.html">UPDATE</a></span>(<span class="st">'t1'</span>, <span class="dt">col1 =</span> <span class="st">'a'</span>)</code></pre></div>
 <pre><code>UPDATE t1  SET col1="a"</code></pre>
-<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="op">&gt;</span><span class="st"> </span><span class="kw"><a href="../reference/UPDATE.html">UPDATE</a></span>(<span class="st">'t1'</span>, <span class="kw">c</span>(<span class="dt">col1 =</span> <span class="st">'a'</span>, <span class="dt">col2 =</span> <span class="dv">42</span>), <span class="st">'id'</span> <span class="op">%IN%</span><span class="st"> </span><span class="dv">1</span><span class="op">:</span><span class="dv">5</span>)</code></pre></div>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="op">&gt;</span><span class="st"> </span><span class="kw"><a href="../reference/UPDATE.html">UPDATE</a></span>(<span class="st">'t1'</span>, <span class="dt">col1 =</span> <span class="op">~</span>col2 <span class="op">*</span><span class="st"> </span><span class="fl">1.25</span>)</code></pre></div>
+<pre><code>UPDATE t1  SET col1=col2 * 1.25</code></pre>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="op">&gt;</span><span class="st"> </span><span class="kw"><a href="../reference/UPDATE.html">UPDATE</a></span>(<span class="st">'t1'</span>, <span class="dt">col1 =</span> <span class="st">'a'</span>, <span class="dt">col2 =</span> <span class="dv">42</span>, <span class="dt">.where =</span> <span class="st">'id'</span> <span class="op">%IN%</span><span class="st"> </span><span class="dv">1</span><span class="op">:</span><span class="dv">5</span>)</code></pre></div>
 <pre><code>UPDATE t1  SET col1="a", col2=42 WHERE id IN (1, 2, 3, 4, 5)</code></pre>
-<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="op">&gt;</span><span class="st"> </span><span class="co"># The following statement doesn't work as expected (yet).</span>
-<span class="er">&gt;</span><span class="st"> </span><span class="co"># This would set id equal to the string "id + 1", not id+1.</span>
-<span class="er">&gt;</span><span class="st"> </span><span class="kw"><a href="../reference/UPDATE.html">UPDATE</a></span>(<span class="st">'t'</span>, <span class="kw">c</span>(<span class="dt">id =</span> <span class="st">'id + 1'</span>), <span class="dt">.order =</span> <span class="kw"><a href="../reference/general.html">DESC</a></span>(<span class="st">'id'</span>))</code></pre></div>
-<pre><code>UPDATE t  SET id="id + 1"  ORDER BY id DESC</code></pre>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="op">&gt;</span><span class="st"> </span><span class="co"># Update provides .where argument, but it's easier to add this outside UPDATE()</span>
+<span class="er">&gt;</span><span class="st"> </span><span class="kw"><a href="../reference/UPDATE.html">UPDATE</a></span>(<span class="st">'t1'</span>, <span class="dt">col1 =</span> <span class="st">'a'</span>, <span class="dt">col2 =</span> <span class="dv">42</span>) <span class="op">%+%</span><span class="st"> </span><span class="kw"><a href="../reference/general.html">WHERE</a></span>(<span class="st">'id'</span> <span class="op">%IN%</span><span class="st"> </span><span class="dv">1</span><span class="op">:</span><span class="dv">5</span>)</code></pre></div>
+<pre><code>UPDATE t1  SET col1="a", col2=42 WHERE id IN (1, 2, 3, 4, 5)</code></pre>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="op">&gt;</span><span class="st"> </span><span class="kw"><a href="../reference/UPDATE.html">UPDATE</a></span>(<span class="st">'iris'</span>, <span class="dt">some_column =</span> <span class="dv">1</span>, <span class="dt">some_other_col =</span> <span class="st">"high"</span>) <span class="op">%+%</span><span class="st"> </span><span class="kw"><a href="../reference/general.html">WHERE</a></span>(<span class="kw"><a href="../reference/comparison.html">eq</a></span>(<span class="dt">another_col =</span> <span class="dv">2</span>))</code></pre></div>
+<pre><code>UPDATE iris  SET some_column=1, some_other_col="high" WHERE another_col=2</code></pre>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="op">&gt;</span><span class="st"> </span><span class="kw"><a href="../reference/UPDATE.html">UPDATE</a></span>(<span class="st">'t'</span>, <span class="dt">id =</span> <span class="op">~</span>id <span class="op">+</span><span class="st"> </span><span class="dv">1</span>) <span class="op">%+%</span><span class="st"> </span><span class="kw"><a href="../reference/general.html">ORDER_BY</a></span>(<span class="kw"><a href="../reference/general.html">DESC</a></span>(<span class="st">'id'</span>))</code></pre></div>
+<pre><code>UPDATE t  SET id=id + 1 ORDER BY id DESC</code></pre>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="op">&gt;</span><span class="st"> </span><span class="co"># Multiple tables</span>
+<span class="er">&gt;</span><span class="st"> </span><span class="kw"><a href="../reference/UPDATE.html">UPDATE</a></span>(<span class="kw">c</span>(<span class="st">'items'</span>, <span class="st">'month'</span>), <span class="dt">items.price =</span> <span class="op">~</span>month.price, <span class="dt">.where =</span> <span class="kw"><a href="../reference/comparison.html">eq</a></span>(<span class="dt">items.id =</span> <span class="op">~</span>month.id))</code></pre></div>
+<pre><code>UPDATE items , MONTH  SET items.price=month.price WHERE items.id=month.id</code></pre>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="op">&gt;</span><span class="st"> </span><span class="kw"><a href="../reference/UPDATE.html">UPDATE</a></span>(<span class="kw">c</span>(<span class="st">'items'</span>, <span class="st">'month'</span>), <span class="dt">items.price =</span> <span class="op">~</span>month.price) <span class="op">%+%</span><span class="st"> </span><span class="kw"><a href="../reference/general.html">WHERE</a></span>(<span class="kw"><a href="../reference/comparison.html">eq</a></span>(<span class="dt">items.id =</span> <span class="op">~</span>month.id))</code></pre></div>
+<pre><code>UPDATE items , MONTH  SET items.price=month.price WHERE items.id=month.id</code></pre>
 </div>
 </div>
 </div>

@@ -12,7 +12,9 @@ backtick <- function(...) wrap('`', ...)
 #' @export
 quotes <- function(...) {
   items <- list(...)
-  if (length(items) == 1 && length(items[[1]]) > 1) items <- as.list(items[[1]])
+  if (length(items) == 1 && !inherits(items[[1]], 'formula') && length(items[[1]]) > 1) {
+    items <- as.list(items[[1]])
+  }
   unlist(lapply(items, .quotes))
 }
 
@@ -23,7 +25,7 @@ quotes <- function(...) {
 
   if (is.null(x))
     "NULL"
-  else if (any(is.na(x))) {
+  else if (sql_type != 'formula' && any(is.na(x))) {
     if (sql_type == 'number') {
       return(ifelse(is.na(x), 'NULL', paste(x)))
     } else {
@@ -33,6 +35,7 @@ quotes <- function(...) {
     }
   } else {
     switch(sql_type,
+           'formula' = Reduce(paste, deparse(x[[2]], width.cutoff = 500)),
            'factor' = quotes_(paste(x)),
            'Date'   = quotes_(strftime(x, '%F')),
            'POSIXt' = quotes_(strftime(x, '%F %T')),
@@ -62,6 +65,7 @@ sql_typeof <- function(x) {
   is_number <- class(y) == "integer" | class(y) == "numeric"
 
   if (is.factor(x)) "factor"
+  else if (inherits(x, 'formula')) 'formula'
   else if (inherits(x, "Date")) "Date"
   else if (inherits(x, "POSIXt")) "POSIXt"
   else if (is_number) 'number'

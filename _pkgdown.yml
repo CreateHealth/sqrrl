@@ -1,6 +1,21 @@
 authors:
   Garrick Aden-Buie:
     href: https://garrickadenbuie.com
+navbar:
+  title: 🐿 sqrrl
+  type: default
+  left:
+  - icon: fa-home fa-lg
+    href: index.html
+  - text: Reference
+    href: reference/index.html
+  - text: Articles
+    menu:
+    - text: Quick Overview
+      href: articles/overview.html
+  right:
+  - icon: fa-github fa-lg
+    href: https://github.com/gadenbuie/sqrrl
 template:
   params:
     bootswatch: yeti

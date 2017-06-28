@@ -2,38 +2,52 @@
 % Please edit documentation in R/sqrrl.R
 \name{UPDATE}
 \alias{UPDATE}
+\alias{UPDATE_}
 \title{Create \code{UPDATE} SQL statement}
 \usage{
-UPDATE(table, set, ..., .ignore = FALSE, .order = NULL, .limit = NULL)
+UPDATE(`_tables`, ..., .where = NULL, .ignore = FALSE)
+
+UPDATE_(`_tables`, set_vars, .where = NULL, .ignore = FALSE)
 }
 \arguments{
-\item{table}{Table name for update (can be named)}
+\item{...}{Column names and associated values. Each argument should be
+single-valued. Use \code{~} to escape quoting: anything after the \code{~} character
+will be added literally as written to the statment. This can be used to
+escape SQL commands.}
 
-\item{set}{Named vector of column-value pairs, where the vector name is the
-column name.}
-
-\item{...}{Conditions passed on to \code{WHERE} clause (optional)}
+\item{.where}{Conditions passed on to \code{WHERE} clause (optional)}
 
 \item{.ignore}{Add \code{IGNORE} keyword to \code{UPDATE} clause}
 
-\item{.order}{Optional vector of columns passed to \code{\link{ORDER_BY}}}
+\item{set_vars}{Named list of columns and values. Each list entry can have
+only one value. Entries starting with \code{~} will be escaped from quoting.}
 
-\item{.limit}{Optional number of rows for \code{LIMIT} condition}
+\item{`_tables`}{Vector of table name(s) for update (vector names are used as
+aliases). Should be specified as the first entry, the odd parameter name is
+used to avoid collisions with column names specified in \code{...}.}
 }
 \description{
-Creates an UPDATE SQL statement for a single table. Currently, this function
-cannot handle using expressions in the \code{set} parameter. \code{UPDATE} is only
-useful at this time for single table updates when \code{set} contains actual
-values.
-}
-\details{
-Improvements are planned for this function to handle multiple table updates
-and the use of SQL expressions in the \code{SET} statement.
+Creates an UPDATE SQL statement for single or multiple tables. The first
+argument is always the table name(s), where a named vector can be used to set
+table aliases. Additional arguments must be named and are parsed into the
+\code{SET} SQL statement. Argument names reference columns and the assigned values
+are used as values in the \code{SET} statement and will be quoted -- for example
+\code{a = 'b'} returns \code{'SET a="b"'}. To escape quoting, use \code{~}, and anything
+after the \code{~} will be added directly to the statement -- \code{a = ~b} returns
+\code{a=b}. \code{WHERE} conditions can be added via the optional \code{.where} argument,
+but it is easier to simply add the where clause after the UPDATE with
+\link{WHERE}. The same applies for \link{ORDER_BY} and \link{LIMIT} conditions.
 }
 \examples{
-UPDATE('iris', c(some_column = 1, some_other_col = "high"), eq(another_col = 2), geq(a_third_col = 10))
-UPDATE('t1', c(col1 = 'a'))
-UPDATE('t1', c(col1 = 'a', col2 = 42), 'id' \%IN\% 1:5)
-UPDATE('t', c(id = 'id + 1'), .order = DESC('id'))
+UPDATE('t1', col1 = 'a')
+UPDATE('t1', col1 = ~col2 * 1.25)
+UPDATE('t1', col1 = 'a', col2 = 42, .where = 'id' \%IN\% 1:5)
+UPDATE('t1', col1 = 'a', col2 = 42) \%+\% WHERE('id' \%IN\% 1:5)
+UPDATE('iris', some_column = 1, some_other_col = "high") \%+\% WHERE(eq(another_col = 2))
+UPDATE('t', id = ~id + 1) \%+\% ORDER_BY(DESC('id'))
+
+# Multiple tables
+UPDATE(c('items', 'month'), items.price = ~month.price, .where = eq(items.id = ~month.id))
+UPDATE(c('items', 'month'), items.price = ~month.price) \%+\% WHERE(eq(items.id = ~month.id))
 
 }

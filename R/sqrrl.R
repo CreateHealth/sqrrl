@@ -24,7 +24,6 @@ SELECT <- function(..., .distinct = FALSE) {
   } else if (!has_names) {
     cols <- list(unlist(cols))
   } else {
-    col_names <- names(cols)
     # Names can be table name or variable name
     # If named entry length > 1 or named entry has names, then table name
     # Else variable alias
@@ -286,53 +285,90 @@ INSERT_INTO_VALUES <- function(tbl, vals, cols = NULL) {
 }
 
 
-SET <- function(...) paste("SET", commas(eq(...)))
-SET_ <- function(set) {
-  if (is.null(names(set))) {
-    stop("set must be a named vector of column-value pairs.")
+SET_ <- function(set_vars) {
+  if (sys.call(sys.parent())[[1]] != 'SET')
+    set_vars <- check_set_vars(set_vars, arg = 'set_vars')
+  set_vars <- sapply(names(set_vars), function(n) eq_(n, set_vars[[n]]), USE.NAMES = FALSE)
+  "SET" %+% commas(set_vars)
+}
+
+SET <- function(...) {
+  set_vars <- list(...)
+  set_vars <- check_set_vars(set_vars)
+  SET_(set_vars)
+}
+
+check_set_vars <- function(set_vars, arg = "`...`") {
+  if (is.null(names(set_vars)))   stop("Arguments in ", arg, " must be named.")
+  if (any(names(set_vars) == '')) stop("All arguments in ", arg, " must have a name.")
+  if (any(duplicated(names(set_vars)))) {
+    duplicates <- names(set_vars)
+    stop("All arguments in ", arg, " must have a unique name")
   }
-  set <- vec2df(set)
-  set <- sapply(names(set), function(x) eq_(x, set[[x]]), USE.NAMES = FALSE)
-  "SET" %+% commas(set)
+  for (var in names(set_vars)) {
+    if (inherits(set_vars[[var]], 'list')) {
+      warning("Argument `", var, "` contained a list, taking first element of the list.")
+      set_vars[[var]] <- set_vars[[var]][[1]]
+    }
+    if (!inherits(set_vars[[var]], 'formula') && length(set_vars[[var]]) > 1) {
+      warning("All arguments in ", arg, " must be single-valued. Taking first value for `", var, "`")
+      set_vars[[var]] <- set_vars[[var]][[1]]
+    }
+  }
+  set_vars
 }
 
 #' Create `UPDATE` SQL statement
 #'
-#' Creates an UPDATE SQL statement for a single table. Currently, this function
-#' cannot handle using expressions in the `set` parameter. `UPDATE` is only
-#' useful at this time for single table updates when `set` contains actual
-#' values.
-#'
-#' Improvements are planned for this function to handle multiple table updates
-#' and the use of SQL expressions in the `SET` statement.
+#' Creates an UPDATE SQL statement for single or multiple tables. The first
+#' argument is always the table name(s), where a named vector can be used to set
+#' table aliases. Additional arguments must be named and are parsed into the
+#' `SET` SQL statement. Argument names reference columns and the assigned values
+#' are used as values in the `SET` statement and will be quoted -- for example
+#' `a = 'b'` returns `'SET a="b"'`. To escape quoting, use `~`, and anything
+#' after the `~` will be added directly to the statement -- `a = ~b` returns
+#' `a=b`. `WHERE` conditions can be added via the optional `.where` argument,
+#' but it is easier to simply add the where clause after the UPDATE with
+#' [WHERE]. The same applies for [ORDER_BY] and [LIMIT] conditions.
 #'
 #' @examples
-#' UPDATE('iris', c(some_column = 1, some_other_col = "high"), eq(another_col = 2), geq(a_third_col = 10))
-#' UPDATE('t1', c(col1 = 'a'))
-#' UPDATE('t1', c(col1 = 'a', col2 = 42), 'id' %IN% 1:5)
-#' UPDATE('t', c(id = 'id + 1'), .order = DESC('id'))
+#' UPDATE('t1', col1 = 'a')
+#' UPDATE('t1', col1 = ~col2 * 1.25)
+#' UPDATE('t1', col1 = 'a', col2 = 42, .where = 'id' %IN% 1:5)
+#' UPDATE('t1', col1 = 'a', col2 = 42) %+% WHERE('id' %IN% 1:5)
+#' UPDATE('iris', some_column = 1, some_other_col = "high") %+% WHERE(eq(another_col = 2))
+#' UPDATE('t', id = ~id + 1) %+% ORDER_BY(DESC('id'))
 #'
-#' @param table Table name for update (can be named)
-#' @param set Named vector of column-value pairs, where the vector name is the
-#'   column name.
-#' @param ... Conditions passed on to `WHERE` clause (optional)
+#' # Multiple tables
+#' UPDATE(c('items', 'month'), items.price = ~month.price, .where = eq(items.id = ~month.id))
+#' UPDATE(c('items', 'month'), items.price = ~month.price) %+% WHERE(eq(items.id = ~month.id))
+#'
+#' @param `_tables` Vector of table name(s) for update (vector names are used as
+#'   aliases). Should be specified as the first entry, the odd parameter name is
+#'   used to avoid collisions with column names specified in `...`.
+#' @param ... Column names and associated values. Each argument should be
+#'   single-valued. Use `~` to escape quoting: anything after the `~` character
+#'   will be added literally as written to the statment. This can be used to
+#'   escape SQL commands.
+#' @param set_vars Named list of columns and values. Each list entry can have
+#'   only one value. Entries starting with `~` will be escaped from quoting.
+#' @param .where Conditions passed on to `WHERE` clause (optional)
 #' @param .ignore Add `IGNORE` keyword to `UPDATE` clause
-#' @param .order Optional vector of columns passed to [`ORDER_BY`]
-#' @param .limit Optional number of rows for `LIMIT` condition
 #' @export
-UPDATE <- function(table, set, ..., .ignore = FALSE, .order = NULL, .limit = NULL) {
-  if (length(table) > 1) stop("UPDATE is for single-table updates. Please use UPDATE_MULT instead.")
-  if (is.null(names(set))) {
-    stop("`set` must be a named vector of column-value pairs.")
-  }
-  where <- c(...)
+UPDATE <- function(`_tables`, ..., .where = NULL, .ignore = FALSE) {
   update <- ifelse(!.ignore, "UPDATE", "UPDATE IGNORE") %+%
-    table %+% names(table) %+%
-    SET_(set) %+%
-    WHERE(cond = length(where), where) %+%
-    (
-    if (!is.null(.order)) ORDER_BY(.order) %+%
-    if (!is.null(.limit)) LIMIT(.limit)
-    )
+    commas(`_tables` %+% names(`_tables`)) %+%
+    SET(...) %+%
+    WHERE(cond = length(.where), .where)
+  gsub(" +$", "", update)
+}
+
+#' @rdname UPDATE
+#' @export
+UPDATE_ <- function(`_tables`, set_vars, .where = NULL, .ignore = FALSE) {
+  update <- ifelse(!.ignore, "UPDATE", "UPDATE IGNORE") %+%
+    commas(`_tables` %+% names(`_tables`)) %+%
+    SET(set_vars) %+%
+    WHERE(cond = length(.where), .where)
   gsub(" +$", "", update)
 }

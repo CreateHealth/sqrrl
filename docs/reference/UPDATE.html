@@ -47,12 +47,12 @@
         <span class="icon-bar"></span>
         <span class="icon-bar"></span>
       </button>
-      <a class="navbar-brand" href="../index.html">sqrrl</a>
+      <a class="navbar-brand" href="../index.html">🐿 sqrrl</a>
     </div>
     <div id="navbar" class="navbar-collapse collapse">
       <ul class="nav navbar-nav">
         <li>
-  <a href="..//index.html">
+  <a href="../index.html">
     <span class="fa fa-home fa-lg"></span>
      
   </a>
@@ -96,28 +96,34 @@
     </div>
 
     
-    <p>Creates an UPDATE SQL statement for a single table. Currently, this function
-cannot handle using expressions in the <code>set</code> parameter. <code>UPDATE</code> is only
-useful at this time for single table updates when <code>set</code> contains actual
-values.</p>
+    <p>Creates an UPDATE SQL statement for single or multiple tables. The first
+argument is always the table name(s), where a named vector can be used to set
+table aliases. Additional arguments must be named and are parsed into the
+<code>SET</code> SQL statement. Argument names reference columns and the assigned values
+are used as values in the <code>SET</code> statement and will be quoted -- for example
+<code>a = 'b'</code> returns <code>'SET a="b"'</code>. To escape quoting, use <code>~</code>, and anything
+after the <code>~</code> will be added directly to the statement -- <code>a = ~b</code> returns
+<code>a=b</code>. <code>WHERE</code> conditions can be added via the optional <code>.where</code> argument,
+but it is easier to simply add the where clause after the UPDATE with
+<a href='general.html'>WHERE</a>. The same applies for <a href='general.html'>ORDER_BY</a> and <a href='general.html'>LIMIT</a> conditions.</p>
     
 
-    <pre class="usage"><span class='fu'>UPDATE</span>(<span class='no'>table</span>, <span class='no'>set</span>, <span class='no'>...</span>, <span class='kw'>.ignore</span> <span class='kw'>=</span> <span class='fl'>FALSE</span>, <span class='kw'>.order</span> <span class='kw'>=</span> <span class='kw'>NULL</span>, <span class='kw'>.limit</span> <span class='kw'>=</span> <span class='kw'>NULL</span>)</pre>
+    <pre class="usage"><span class='fu'>UPDATE</span>(<span class='no'>`_tables`</span>, <span class='no'>...</span>, <span class='kw'>.where</span> <span class='kw'>=</span> <span class='kw'>NULL</span>, <span class='kw'>.ignore</span> <span class='kw'>=</span> <span class='fl'>FALSE</span>)
+
+<span class='fu'>UPDATE_</span>(<span class='no'>`_tables`</span>, <span class='no'>set_vars</span>, <span class='kw'>.where</span> <span class='kw'>=</span> <span class='kw'>NULL</span>, <span class='kw'>.ignore</span> <span class='kw'>=</span> <span class='fl'>FALSE</span>)</pre>
     
     <h2 class="hasAnchor" id="arguments"><a class="anchor" href="#arguments"></a> Arguments</h2>
     <table class="ref-arguments">
     <colgroup><col class="name" /><col class="desc" /></colgroup>
     <tr>
-      <th>table</th>
-      <td><p>Table name for update (can be named)</p></td>
-    </tr>
-    <tr>
-      <th>set</th>
-      <td><p>Named vector of column-value pairs, where the vector name is the
-column name.</p></td>
-    </tr>
-    <tr>
       <th>...</th>
+      <td><p>Column names and associated values. Each argument should be
+single-valued. Use <code>~</code> to escape quoting: anything after the <code>~</code> character
+will be added literally as written to the statment. This can be used to
+escape SQL commands.</p></td>
+    </tr>
+    <tr>
+      <th>.where</th>
       <td><p>Conditions passed on to <code>WHERE</code> clause (optional)</p></td>
     </tr>
     <tr>
@@ -125,32 +131,30 @@ column name.</p></td>
       <td><p>Add <code>IGNORE</code> keyword to <code>UPDATE</code> clause</p></td>
     </tr>
     <tr>
-      <th>.order</th>
-      <td><p>Optional vector of columns passed to <code><a href='general.html'>ORDER_BY</a></code></p></td>
+      <th>set_vars</th>
+      <td><p>Named list of columns and values. Each list entry can have
+only one value. Entries starting with <code>~</code> will be escaped from quoting.</p></td>
     </tr>
     <tr>
-      <th>.limit</th>
-      <td><p>Optional number of rows for <code>LIMIT</code> condition</p></td>
+      <th>`_tables`</th>
+      <td><p>Vector of table name(s) for update (vector names are used as
+aliases). Should be specified as the first entry, the odd parameter name is
+used to avoid collisions with column names specified in <code>...</code>.</p></td>
     </tr>
     </table>
     
-    <h2 class="hasAnchor" id="details"><a class="anchor" href="#details"></a>Details</h2>
-
-    <p>Improvements are planned for this function to handle multiple table updates
-and the use of SQL expressions in the <code>SET</code> statement.</p>
-    
 
     <h2 class="hasAnchor" id="examples"><a class="anchor" href="#examples"></a>Examples</h2>
-    <pre class="examples"><div class='input'><span class='fu'>UPDATE</span>(<span class='st'>'iris'</span>, <span class='fu'>c</span>(<span class='kw'>some_column</span> <span class='kw'>=</span> <span class='fl'>1</span>, <span class='kw'>some_other_col</span> <span class='kw'>=</span> <span class='st'>"high"</span>), <span class='fu'><a href='comparison.html'>eq</a></span>(<span class='kw'>another_col</span> <span class='kw'>=</span> <span class='fl'>2</span>), <span class='fu'><a href='comparison.html'>geq</a></span>(<span class='kw'>a_third_col</span> <span class='kw'>=</span> <span class='fl'>10</span>))</div><div class='output co'>#&gt; [1] "UPDATE iris  SET some_column=1, some_other_col=\"high\" WHERE another_col=2 AND a_third_col&gt;=10"</div><div class='input'><span class='fu'>UPDATE</span>(<span class='st'>'t1'</span>, <span class='fu'>c</span>(<span class='kw'>col1</span> <span class='kw'>=</span> <span class='st'>'a'</span>))</div><div class='output co'>#&gt; [1] "UPDATE t1  SET col1=\"a\""</div><div class='input'><span class='fu'>UPDATE</span>(<span class='st'>'t1'</span>, <span class='fu'>c</span>(<span class='kw'>col1</span> <span class='kw'>=</span> <span class='st'>'a'</span>, <span class='kw'>col2</span> <span class='kw'>=</span> <span class='fl'>42</span>), <span class='st'>'id'</span> <span class='kw'>%IN%</span> <span class='fl'>1</span>:<span class='fl'>5</span>)</div><div class='output co'>#&gt; [1] "UPDATE t1  SET col1=\"a\", col2=42 WHERE id IN (1, 2, 3, 4, 5)"</div><div class='input'><span class='fu'>UPDATE</span>(<span class='st'>'t'</span>, <span class='fu'>c</span>(<span class='kw'>id</span> <span class='kw'>=</span> <span class='st'>'id + 1'</span>), <span class='kw'>.order</span> <span class='kw'>=</span> <span class='fu'><a href='general.html'>DESC</a></span>(<span class='st'>'id'</span>))</div><div class='output co'>#&gt; [1] "UPDATE t  SET id=\"id + 1\"  ORDER BY id DESC"</div><div class='input'>
+    <pre class="examples"><div class='input'><span class='fu'>UPDATE</span>(<span class='st'>'t1'</span>, <span class='kw'>col1</span> <span class='kw'>=</span> <span class='st'>'a'</span>)</div><div class='output co'>#&gt; [1] "UPDATE t1  SET col1=\"a\""</div><div class='input'><span class='fu'>UPDATE</span>(<span class='st'>'t1'</span>, <span class='kw'>col1</span> <span class='kw'>=</span> ~<span class='no'>col2</span> * <span class='fl'>1.25</span>)</div><div class='output co'>#&gt; [1] "UPDATE t1  SET col1=col2 * 1.25"</div><div class='input'><span class='fu'>UPDATE</span>(<span class='st'>'t1'</span>, <span class='kw'>col1</span> <span class='kw'>=</span> <span class='st'>'a'</span>, <span class='kw'>col2</span> <span class='kw'>=</span> <span class='fl'>42</span>, <span class='kw'>.where</span> <span class='kw'>=</span> <span class='st'>'id'</span> <span class='kw'>%IN%</span> <span class='fl'>1</span>:<span class='fl'>5</span>)</div><div class='output co'>#&gt; [1] "UPDATE t1  SET col1=\"a\", col2=42 WHERE id IN (1, 2, 3, 4, 5)"</div><div class='input'><span class='fu'>UPDATE</span>(<span class='st'>'t1'</span>, <span class='kw'>col1</span> <span class='kw'>=</span> <span class='st'>'a'</span>, <span class='kw'>col2</span> <span class='kw'>=</span> <span class='fl'>42</span>) <span class='kw'>%+%</span> <span class='fu'><a href='general.html'>WHERE</a></span>(<span class='st'>'id'</span> <span class='kw'>%IN%</span> <span class='fl'>1</span>:<span class='fl'>5</span>)</div><div class='output co'>#&gt; [1] "UPDATE t1  SET col1=\"a\", col2=42 WHERE id IN (1, 2, 3, 4, 5)"</div><div class='input'><span class='fu'>UPDATE</span>(<span class='st'>'iris'</span>, <span class='kw'>some_column</span> <span class='kw'>=</span> <span class='fl'>1</span>, <span class='kw'>some_other_col</span> <span class='kw'>=</span> <span class='st'>"high"</span>) <span class='kw'>%+%</span> <span class='fu'><a href='general.html'>WHERE</a></span>(<span class='fu'><a href='comparison.html'>eq</a></span>(<span class='kw'>another_col</span> <span class='kw'>=</span> <span class='fl'>2</span>))</div><div class='output co'>#&gt; [1] "UPDATE iris  SET some_column=1, some_other_col=\"high\" WHERE another_col=2"</div><div class='input'><span class='fu'>UPDATE</span>(<span class='st'>'t'</span>, <span class='kw'>id</span> <span class='kw'>=</span> ~<span class='no'>id</span> + <span class='fl'>1</span>) <span class='kw'>%+%</span> <span class='fu'><a href='general.html'>ORDER_BY</a></span>(<span class='fu'><a href='general.html'>DESC</a></span>(<span class='st'>'id'</span>))</div><div class='output co'>#&gt; [1] "UPDATE t  SET id=id + 1 ORDER BY id DESC"</div><div class='input'>
+<span class='co'># Multiple tables</span>
+<span class='fu'>UPDATE</span>(<span class='fu'>c</span>(<span class='st'>'items'</span>, <span class='st'>'month'</span>), <span class='kw'>items.price</span> <span class='kw'>=</span> ~<span class='no'>month.price</span>, <span class='kw'>.where</span> <span class='kw'>=</span> <span class='fu'><a href='comparison.html'>eq</a></span>(<span class='kw'>items.id</span> <span class='kw'>=</span> ~<span class='no'>month.id</span>))</div><div class='output co'>#&gt; [1] "UPDATE items , month  SET items.price=month.price WHERE items.id=month.id"</div><div class='input'><span class='fu'>UPDATE</span>(<span class='fu'>c</span>(<span class='st'>'items'</span>, <span class='st'>'month'</span>), <span class='kw'>items.price</span> <span class='kw'>=</span> ~<span class='no'>month.price</span>) <span class='kw'>%+%</span> <span class='fu'><a href='general.html'>WHERE</a></span>(<span class='fu'><a href='comparison.html'>eq</a></span>(<span class='kw'>items.id</span> <span class='kw'>=</span> ~<span class='no'>month.id</span>))</div><div class='output co'>#&gt; [1] "UPDATE items , month  SET items.price=month.price WHERE items.id=month.id"</div><div class='input'>
 </div></pre>
   </div>
   <div class="col-md-3 hidden-xs hidden-sm" id="sidebar">
     <h2>Contents</h2>
     <ul class="nav nav-pills nav-stacked">
       <li><a href="#arguments">Arguments</a></li>
-      
-      <li><a href="#details">Details</a></li>
-      
+            
       <li><a href="#examples">Examples</a></li>
     </ul>
 

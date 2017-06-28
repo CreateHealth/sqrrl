@@ -167,10 +167,16 @@ INSERT_INTO_VALUES('iris', c(6.5, 3.2, 5.1, 2, 'virginica'))
 ### UPDATE
 
 ```{r update, output.sql=TRUE}
-UPDATE('iris', c(some_column = 1, some_other_col = "high"), eq(another_col = 2), geq(a_third_col = 10))
-UPDATE('t1', c(col1 = 'a'))
-UPDATE('t1', c(col1 = 'a', col2 = 42), 'id' %IN% 1:5)
-# The following statement doesn't work as expected (yet).
-# This would set id equal to the string "id + 1", not id+1.
-UPDATE('t', c(id = 'id + 1'), .order = DESC('id'))
+UPDATE('t1', col1 = 'a')
+UPDATE('t1', col1 = ~col2 * 1.25)
+UPDATE('t1', col1 = 'a', col2 = 42, .where = 'id' %IN% 1:5)
+
+# Update provides .where argument, but it's easier to add this outside UPDATE()
+UPDATE('t1', col1 = 'a', col2 = 42) %+% WHERE('id' %IN% 1:5)
+UPDATE('iris', some_column = 1, some_other_col = "high") %+% WHERE(eq(another_col = 2))
+UPDATE('t', id = ~id + 1) %+% ORDER_BY(DESC('id'))
+
+# Multiple tables
+UPDATE(c('items', 'month'), items.price = ~month.price, .where = eq(items.id = ~month.id))
+UPDATE(c('items', 'month'), items.price = ~month.price) %+% WHERE(eq(items.id = ~month.id))
 ```
