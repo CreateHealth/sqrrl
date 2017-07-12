@@ -1,5 +1,5 @@
 ---
-title: "Quick Overview"
+title: "Get Started"
 author: "Garrick Aden-Buie"
 date: "`r Sys.Date()`"
 output: rmarkdown::html_vignette
